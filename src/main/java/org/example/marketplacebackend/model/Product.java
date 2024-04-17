@@ -1,10 +1,12 @@
 package org.example.marketplacebackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -30,6 +32,7 @@ public class Product {
   private String name;
 
   @ManyToOne
+  @JoinColumn(name = "type")
   private ProductType type;
 
   private Integer price;
@@ -41,9 +44,11 @@ public class Product {
   private String description;
 
   @ManyToOne
+  @JoinColumn(name = "seller")
   private Account seller;
 
   @ManyToOne
+  @JoinColumn(name = "buyer")
   private Account buyer;
 
   private Integer color;
