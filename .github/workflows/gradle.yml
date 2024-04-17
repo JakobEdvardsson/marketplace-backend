@@ -34,5 +34,5 @@ jobs:
         arguments: build
       env: 
         POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        USER: ${{ secrets.USER }}
-        PASSWORD: ${{ secrets.PASSWORD }}
+        POSTGRES_USER: ${{ secrets.USER }}
+        POSTGRES_PASSWORD: ${{ secrets.PASSWORD }}
