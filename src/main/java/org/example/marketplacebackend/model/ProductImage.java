@@ -1,44 +1,31 @@
 package org.example.marketplacebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.Objects;
+import lombok.ToString;
+import java.util.UUID;
 
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @EqualsAndHashCode @ToString
 @Entity
-@Table(name = "product_image")
+@Table(name = "productImage")
 public class ProductImage {
 
   @Id
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private UUID id;
+
+  @ManyToOne
+  @JsonIgnore
+  private Product product;
+
   private String imageUrl;
-
-  public ProductImage(String imageUrl) {
-    this.imageUrl = imageUrl;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-
-    if (this == o)
-      return true;
-    if (!(o instanceof ProductImage image))
-      return false;
-
-    return Objects.equals(this.id, image.id) && Objects.equals(this.imageUrl, image.imageUrl);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.id, this.imageUrl);
-  }
-
-  @Override
-  public String toString() {
-    return "ProductImage{" + "id=" + this.id + ", url='" + this.imageUrl + '}';
-  }
 }
