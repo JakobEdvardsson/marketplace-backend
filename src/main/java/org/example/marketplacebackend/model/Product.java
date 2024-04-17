@@ -1,11 +1,16 @@
 package org.example.marketplacebackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,7 +22,7 @@ import java.util.UUID;
 
 @Getter @Setter @NoArgsConstructor @EqualsAndHashCode @ToString
 @Entity
-@Table
+@Table(name = "product")
 public class Product {
 
   @Id
@@ -26,8 +31,9 @@ public class Product {
 
   private String name;
 
-  // todo
-  private String type;
+  @ManyToOne
+  @JoinColumn(name = "type")
+  private ProductType type;
 
   private Integer price;
 
@@ -37,11 +43,13 @@ public class Product {
 
   private String description;
 
-  // todo
-  private Object seller;
+  @ManyToOne
+  @JoinColumn(name = "seller")
+  private Account seller;
 
-  // todo
-  private Object buyer;
+  @ManyToOne
+  @JoinColumn(name = "buyer")
+  private Account buyer;
 
   private Integer color;
 
