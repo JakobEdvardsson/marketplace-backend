@@ -1,17 +1,21 @@
 package org.example.marketplacebackend;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.marketplacebackend.DTO.incoming.UserDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.repository.AccountRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.net.http.HttpRequest;
 import java.sql.Date;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -20,18 +24,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TestAccountEndpoints {
+
   @Autowired
   private MockMvc mockMvc;
 
+  @Autowired
+  private AccountRepository accountRepository;
+
   @Test
+  @Transactional
   void testRegisterUser() throws Exception {
-    Account account = new Account();
-    account.setUsername("test");
-    account.setEmail("test@mail.com");
-    account.setPassword("test123");
-    account.setFirst_name("test1");
-    account.setLast_name("testsson");
-    account.setDate_of_birth(Date.valueOf("1993-03-11"));
+    UserDTO account = new UserDTO("test", "test@mail.com",
+        "test@mail.com", "user", "test123", Date.valueOf("1993-03-11"));
 
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(account);
@@ -41,14 +45,28 @@ public class TestAccountEndpoints {
         .content(json));
 
     createUser.andExpect(status().isCreated());
+  }
 
-    // NOTE: Does not work yet because of security configurations
-    // String response = createUser.andReturn().getResponse().getContentAsString();
-    // JsonNode rootNode = objectMapper.readTree(response);
-    // String id = rootNode.get("id").toString();
-    // ResultActions deleteUser = mockMvc.perform(delete("/v1/accounts/" + id)
-    //     .contentType(MediaType.APPLICATION_JSON));
+  @Test
+  @WithMockUser
+  void deleteLoggedInUser() throws Exception {
+    Account account = new Account();
+    account.setFirst_name("test");
+    account.setLast_name("testsson");
+    account.setUsername("user");
+    account.setPassword("test123");
+    account.setEmail("test@mail.com");
+    account.setDate_of_birth(Date.valueOf("1993-03-11"));
 
-    // deleteUser.andExpect(status().isOk());
+    accountRepository.save(account);
+
+    ResultActions createUser = mockMvc.perform(delete("/v1/accounts"));
+
+    createUser.andExpect(status().isOk());
+  }
+
+  @AfterEach
+  void tearDown() {
+    accountRepository.deleteByUsername("user");
   }
 }

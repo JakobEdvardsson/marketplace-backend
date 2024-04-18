@@ -105,6 +105,7 @@ public class UserService {
 
   /**
    * Deletes the given to user to the database.
+   *
    * @param targetUser The user to be deleted.
    */
   public void deleteUser(Account targetUser) {

@@ -38,7 +38,10 @@ public class SecurityConfig {
         )
         .permitAll()
         //require auth to access these endpoints
-        .requestMatchers("/auth-required")
+        .requestMatchers(
+            "/auth-required",
+            "/v1/accounts"
+        )
         .hasRole("USER")
     );
 

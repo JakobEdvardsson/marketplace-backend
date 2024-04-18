@@ -1,16 +1,14 @@
 package org.example.marketplacebackend.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.marketplacebackend.DTO.incoming.UserDTO;
+import org.example.marketplacebackend.DTO.outgoing.UserRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import java.util.UUID;
+import java.security.Principal;
 
 @RequestMapping("v1/accounts")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
@@ -26,35 +24,38 @@ public class AccountsController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<String> register(@RequestBody Account user) {
-    String password = user.getPassword();
+  public ResponseEntity<?> register(@RequestBody UserDTO user) {
+    Account userModel = new Account();
+    String password = user.password();
     String encodedPassword = passwordEncoder.encode(password);
-    user.setPassword(encodedPassword);
 
-    userService.saveUser(user);
+    userModel.setFirst_name(user.firstName());
+    userModel.setLast_name(user.lastName());
+    userModel.setUsername(user.username());
+    userModel.setEmail(user.email());
+    userModel.setPassword(encodedPassword);
+    userModel.setDate_of_birth(user.date_of_birth());
 
-    Account retrieveUser = userService.getAccountOrException(user.getId());
-    ObjectMapper objectMapper = new ObjectMapper();
-    String userJson;
+    Account userDB = userService.saveUser(userModel);
 
-    try {
-      userJson = objectMapper.writeValueAsString(retrieveUser);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
-    return ResponseEntity.status(HttpStatus.CREATED).body(userJson);
+    UserRegisteredResponseDTO responseDTO = new UserRegisteredResponseDTO(
+        userDB.getFirst_name(), userDB.getLast_name(),
+        userDB.getEmail(), userDB.getUsername(), userDB.getDate_of_birth());
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-    try {
-      Account account = userService.getAccountOrException(id);
-      userService.deleteUser(account);
+  @DeleteMapping("")
+  public ResponseEntity<String> deleteUser(Principal principal) {
+    String username = principal.getName();
+    Account account = userService.getAccountOrNull(username);
 
+    if (account != null) {
+      userService.deleteUser(account);
       return ResponseEntity.status(HttpStatus.OK).body("Deleted successfully");
-    } catch (UsernameNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
     }
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
   }
 
 }
