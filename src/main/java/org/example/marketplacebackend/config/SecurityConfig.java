@@ -33,11 +33,15 @@ public class SecurityConfig {
         .requestMatchers(
             "/auth-not-required",
             "/v1/accounts/login",
-            "/login"
+            "/login",
+            "/v1/accounts/register"
         )
         .permitAll()
         //require auth to access these endpoints
-        .requestMatchers("/auth-required")
+        .requestMatchers(
+            "/auth-required",
+            "/v1/accounts"
+        )
         .hasRole("USER")
     );
 
@@ -65,7 +69,7 @@ public class SecurityConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost:80, http://localhost:808, http://127.0.0.1:8080, http://localhost:3000")
+        registry.addMapping("/**").allowedOrigins("http://localhost:80, http://localhost:8080, http://127.0.0.1:8080, http://localhost:3000")
             .allowCredentials(true);
       }
     };

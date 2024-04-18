@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
 class MarketplaceBackendApplicationTests {
@@ -42,7 +40,7 @@ class MarketplaceBackendApplicationTests {
     seller.setFirst_name("Test");
     seller.setLast_name("Seller");
     seller.setDate_of_birth(new Date(1993-03-11));
-    seller.setEmail("test@mail.com");
+    seller.setEmail("seller@mail.com");
     seller.setPassword("test123");
     seller.setUsername("ffsFILIP");
 
