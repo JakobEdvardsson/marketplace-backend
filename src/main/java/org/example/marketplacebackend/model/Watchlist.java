@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -18,16 +17,16 @@ import java.util.UUID;
 @Getter @Setter @NoArgsConstructor @EqualsAndHashCode @ToString
 @Entity
 @Table
-public class WatchList {
+public class Watchlist {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private UUID id;
 
   @OneToOne
-  private Account account;
+  private Account subscriber;
 
   @ManyToMany
-  private ProductType productTypeId;
+  private ProductType productType;
   
 }
