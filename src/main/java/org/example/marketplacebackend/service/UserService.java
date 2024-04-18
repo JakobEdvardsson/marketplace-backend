@@ -102,4 +102,12 @@ public class UserService {
   public Account saveUser(Account targetUser) {
     return accountRepo.save(targetUser);
   }
+
+  /**
+   * Deletes the given to user to the database.
+   * @param targetUser The user to be deleted.
+   */
+  public void deleteUser(Account targetUser) {
+    accountRepo.delete(targetUser);
+  }
 }
