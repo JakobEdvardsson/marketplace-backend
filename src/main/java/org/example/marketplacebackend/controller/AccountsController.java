@@ -45,6 +45,7 @@ public class AccountsController {
     return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
   }
 
+
   @DeleteMapping("")
   public ResponseEntity<String> deleteUser(Principal principal) {
     String username = principal.getName();
