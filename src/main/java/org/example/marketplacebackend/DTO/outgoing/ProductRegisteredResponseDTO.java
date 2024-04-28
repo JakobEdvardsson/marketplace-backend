@@ -17,6 +17,6 @@ import java.util.UUID;
 
 public record ProductRegisteredResponseDTO(String name, UUID type, int price, int condition,
                                            String description, UUID seller, String[] imageUrls,
-                                           int color, int productionYear) {
+                                           Integer color, Integer productionYear) {
 
 }
