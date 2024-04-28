@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RequestMapping("v1/products")
@@ -37,7 +40,9 @@ public class ProductsController {
   }
 
   @PostMapping("")
-  public ResponseEntity<?> uploadProduct(@RequestBody ProductDTO product) {
+  public ResponseEntity<?> uploadProduct(@RequestPart ProductDTO product,
+      @RequestParam("files") MultipartFile[] files
+      ) {
     Product productModel = new Product();
     productModel.setName(product.name());
 
@@ -52,15 +57,16 @@ public class ProductsController {
     productModel.setColor(product.color());
     productModel.setProductionYear(product.productionYear());
 
-    // Upload images and add to product model
-    List<ProductImage> uploadedImages = productImageService.uploadImages(product.images());
-    productModel.setProductImages(uploadedImages);
-
     // Save all data to DB
     Product productDB = productRepo.save(productModel);
 
+    // Upload images and add to product model
+    List<ProductImage> uploadedImages = productImageService.uploadImages(productDB.getId(),
+        product.images());
+    productModel.setProductImages(uploadedImages);
+
     // Get all image urls from all image objects
-    String[] imageUrls = productImageService.productImagesToImageUrls(productDB.getProductImages());
+    String[] imageUrls = productImageService.productImagesToImageUrls(uploadedImages);
 
     ProductRegisteredResponseDTO productRegisteredResponseDTO = new ProductRegisteredResponseDTO(
         productDB.getName(), productDB.getType().getId(), productDB.getPrice(),

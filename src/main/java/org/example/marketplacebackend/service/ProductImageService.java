@@ -5,6 +5,7 @@ import org.example.marketplacebackend.repository.ProductImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductImageService {
@@ -15,8 +16,11 @@ public class ProductImageService {
     this.productImageRepo = productImageRepo;
   }
 
-  public List<ProductImage> uploadImages(String[] images) {
+  public List<ProductImage> uploadImages(UUID productId, String[] images) {
     List<ProductImage> uploadedImages = null;
+
+    for (String image: images) {
+    }
 
     return uploadedImages;
   }

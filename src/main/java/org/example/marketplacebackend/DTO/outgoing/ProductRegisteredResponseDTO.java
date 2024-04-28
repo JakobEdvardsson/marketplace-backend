@@ -10,13 +10,13 @@ import java.util.UUID;
  * @param condition
  * @param description
  * @param seller
- * @param images
+ * @param imageUrls
  * @param color
  * @param productionYear
  */
 
 public record ProductRegisteredResponseDTO(String name, UUID type, int price, int condition,
-                                           String description, UUID seller, String[] images,
+                                           String description, UUID seller, String[] imageUrls,
                                            int color, int productionYear) {
 
 }
