@@ -16,7 +16,19 @@ public class ProductImageService {
   }
 
   public List<ProductImage> uploadImages(String[] images) {
+    List<ProductImage> uploadedImages = null;
 
+    return uploadedImages;
+  }
+
+  public String[] productImagesToImageUrls(List<ProductImage> images) {
+    String[] imageUrls = new String[images.size()];
+
+    for (int i = 0; i < images.size(); i++) {
+      imageUrls[i] = images.get(i).getImageUrl();
+    }
+
+    return imageUrls;
   }
 
 }
