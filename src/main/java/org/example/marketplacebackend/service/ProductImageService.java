@@ -64,7 +64,7 @@ public class ProductImageService {
 
     for (MultipartFile image : images) {
       ProductImage uploadedImage = saveAttachment(productId, image);
-        uploadedImages.add(uploadedImage);;
+      uploadedImages.add(uploadedImage);
     }
 
     return uploadedImages;

@@ -69,7 +69,7 @@ public class ProductsController {
     // Get all image urls from all image objects
     String[] imageUrls = productImageService.productImagesToImageUrls(uploadedImages);
 
-    ProductRegisteredResponseDTO productRegisteredResponseDTO = null;
+    ProductRegisteredResponseDTO productRegisteredResponseDTO;
     if (productDB.getColor() != null || productDB.getProductionYear() != null) {
       productRegisteredResponseDTO = new ProductRegisteredResponseDTO(
           productDB.getName(), productDB.getType().getId(), productDB.getPrice(),
