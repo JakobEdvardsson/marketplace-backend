@@ -1,1 +1,0 @@
-INSERT INTO public.account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('8fd54dc3-04ca-41c5-878f-a7c355178e32', 'John', 'Doe', '2024-04-17', 'johndoe420@gmail.com', '$2a$10$WCKI2OPtafr0cYoTYxAuFuhG4I9TJ6HIVwk6oiUs8I75UaeLMbHvO', 'johndoe');
