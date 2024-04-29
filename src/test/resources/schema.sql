@@ -42,20 +42,20 @@ create table product_category
 
 create table product
 (
-    id               uuid default gen_random_uuid() not null
+    id               uuid                     default gen_random_uuid() not null
         constraint product_pk
             primary key,
-    name             varchar                        not null,
-    product_category uuid                           not null
+    name             varchar                                            not null,
+    product_category uuid                                               not null
         constraint product_type_id_fk
             references product_category,
-    price            integer                        not null,
-    condition        integer                        not null
+    price            integer                                            not null,
+    condition        integer                                            not null
         constraint check_condition_range
             check ((condition >= 0) AND (condition <= 4)),
-    is_purchased     boolean                        not null,
-    description      text                           not null,
-    seller           uuid                           not null
+    is_purchased     boolean                                            not null,
+    description      text                                               not null,
+    seller           uuid                                               not null
         constraint product_seller_fk
             references account,
     buyer            uuid
@@ -65,6 +65,7 @@ create table product
     production_year  integer
         constraint check_year
             check ((production_year >= 2000) AND (production_year <= 2100)),
+    created_at       timestamp with time zone default now()             not null,
     constraint check_valid_purchase_status
         check (((buyer IS NULL) AND (is_purchased IS FALSE)) OR
                ((buyer IS NOT NULL) AND (is_purchased IS TRUE)))
