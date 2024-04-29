@@ -38,8 +38,8 @@ public class TestProductCategoryEndpoints {
     ResultActions getCategory = mockMvc.perform(get("/v1/categories"));
     getCategory
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    //.andExpect(content().json(objectMapper.writeValueAsString(categories)))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(objectMapper.writeValueAsString(categories)));
   }
 
   @AfterEach
