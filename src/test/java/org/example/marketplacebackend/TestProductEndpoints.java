@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -57,7 +58,6 @@ public class TestProductEndpoints {
   }
 
   @Test
-  @WithMockUser
   void uploadProductSuccess() throws Exception {
     UUID productType = UUID.fromString("d5509745-450f-4760-8bdd-ddc88d376b37");
     ProductDTO product = new ProductDTO("test", productType,
@@ -79,7 +79,9 @@ public class TestProductEndpoints {
     ResultActions createProduct = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/products")
         .file(jsonProduct)
         .file(imageFile)
-        .file(imageFile2));
+        .file(imageFile2)
+        .principal(() -> "umair")
+    );
 
     String response = createProduct
         .andExpect(status().isCreated())
@@ -96,7 +98,6 @@ public class TestProductEndpoints {
   }
 
   @Test
-  @WithMockUser
   void getAllProducts() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products"));
 
@@ -106,7 +107,6 @@ public class TestProductEndpoints {
   }
 
   @Test
-  @WithMockUser
   void getAllProductsByCategorySuccess() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products?category=kebab"));
 
@@ -118,7 +118,6 @@ public class TestProductEndpoints {
   }
 
   @Test
-  @WithMockUser
   void getAllProductsByCategoryFail() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products?category=asdasdasdasdasd"));
 
@@ -126,7 +125,6 @@ public class TestProductEndpoints {
   }
 
   @Test
-  @WithMockUser
   void deleteProductSuccess() throws Exception {
     String responseCreateProduct = Utils.createProduct(mockMvc);
 
@@ -140,12 +138,12 @@ public class TestProductEndpoints {
     String id = jsonNode.get("id").toString();
     String endPoint = "/v1/products/" + id.substring(1, id.length() - 1);
 
-    ResultActions getProducts = mockMvc.perform(delete(endPoint));
+    ResultActions getProducts = mockMvc.perform(delete(endPoint)
+        .principal(() -> "umair"));
     getProducts.andExpect(status().isOk());
   }
 
   @Test
-  @WithMockUser
   public void getProductByIdSuccessful() throws Exception {
     String id = "798bdcaf-03c7-4fec-8b87-482ed7cac83d";
     String endPoint = "/v1/products/" + id;

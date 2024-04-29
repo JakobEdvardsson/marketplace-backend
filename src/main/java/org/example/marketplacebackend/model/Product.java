@@ -1,5 +1,6 @@
 package org.example.marketplacebackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -53,6 +54,7 @@ public class Product {
 
   private Integer productionYear;
 
+  @Column(insertable = false)
   private Instant createdAt;
 
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
