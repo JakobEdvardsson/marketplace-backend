@@ -14,8 +14,8 @@ import java.util.UUID;
 
 @Getter @Setter @NoArgsConstructor @EqualsAndHashCode @ToString
 @Entity
-@Table(name = "productType")
-public class ProductType {
+@Table(name = "productCategory")
+public class ProductCategory {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

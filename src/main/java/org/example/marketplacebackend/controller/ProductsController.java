@@ -1,14 +1,12 @@
 package org.example.marketplacebackend.controller;
 
-import org.apache.coyote.Response;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProductGetResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProductRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
-import org.example.marketplacebackend.model.ProductType;
-import org.example.marketplacebackend.repository.ProductRepository;
-import org.example.marketplacebackend.repository.ProductTypeRepository;
+import org.example.marketplacebackend.model.ProductCategory;
+import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
@@ -32,12 +30,12 @@ import java.util.UUID;
 @RestController
 public class ProductsController {
 
-  private final ProductTypeRepository productTypeRepo;
+  private final ProductCategoryRepository productTypeRepo;
   private final ProductService productService;
   private final UserService userService;
   private final ProductImageService productImageService;
 
-  public ProductsController(ProductTypeRepository productTypeRepo, ProductService productService,
+  public ProductsController(ProductCategoryRepository productTypeRepo, ProductService productService,
       UserService userService, ProductImageService productImageService) {
     this.productTypeRepo = productTypeRepo;
     this.productService = productService;
@@ -54,8 +52,8 @@ public class ProductsController {
     productModel.setName(product.name());
 
     // User will grab existing product types from a list on the frontend
-    ProductType productTypeDB = productTypeRepo.getReferenceById(product.type());
-    productModel.setType(productTypeDB);
+    ProductCategory productCategoryDB = productTypeRepo.getReferenceById(product.type());
+    productModel.setType(productCategoryDB);
 
     productModel.setPrice(product.price());
     productModel.setCondition(product.condition());
@@ -123,9 +121,11 @@ public class ProductsController {
   @GetMapping("/{id}")
   public ResponseEntity<?> getProduct(@PathVariable UUID id) {
     Product product = productService.getProductOrNull(id);
+
     if (product == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No product with that ID exists.");
     }
+
     ProductGetResponseDTO productGetResponseDTO = new ProductGetResponseDTO(product);
     return ResponseEntity.status(HttpStatus.OK).body(productGetResponseDTO);
   }

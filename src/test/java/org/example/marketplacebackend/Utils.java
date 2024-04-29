@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class Utils {
-  public static String createUser(MockMvc mockMvc) throws Exception {
+  public static String createProduct(MockMvc mockMvc) throws Exception {
     UUID productType = UUID.fromString("d5509745-450f-4760-8bdd-ddc88d376b37");
     UUID seller = UUID.fromString("dc254b85-6610-43c9-9f48-77a80b798158");
     ProductDTO product = new ProductDTO("test", productType,

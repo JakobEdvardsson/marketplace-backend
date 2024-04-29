@@ -75,12 +75,12 @@ public class TestProductEndpoints {
     MockMultipartFile imageFile2 = new MockMultipartFile("data", file2.getFilename(),
         "multipart/form-data", file2.getContentAsByteArray());
 
-    ResultActions createUser = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/products")
+    ResultActions createProduct = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/products")
         .file(jsonProduct)
         .file(imageFile)
         .file(imageFile2));
 
-    String response = createUser.andExpect(status().isCreated())
+    String response = createProduct.andExpect(status().isCreated())
         .andReturn()
         .getResponse()
         .getContentAsString();
@@ -104,10 +104,10 @@ public class TestProductEndpoints {
   @Test
   @WithMockUser
   void deleteProductSuccess() throws Exception {
-    String responseCreateUser = Utils.createUser(mockMvc);
+    String responseCreateProduct = Utils.createProduct(mockMvc);
 
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode jsonNode = mapper.readTree(responseCreateUser);
+    JsonNode jsonNode = mapper.readTree(responseCreateProduct);
     JsonNode imageUrls = jsonNode.get("imageUrls");
     for (int i = 0; i < imageUrls.size(); i++) {
       imageUrlsStrings.add(i, imageUrls.get(i).toString());
@@ -118,6 +118,17 @@ public class TestProductEndpoints {
     ResultActions getProducts = mockMvc.perform(delete(endPoint));
     String responseDeleteProduct = getProducts.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
     System.out.println(responseDeleteProduct);
+  }
+
+  @Test
+  @WithMockUser
+  public void getProductByIdSuccessful() throws Exception {
+    String id = "798bdcaf-03c7-4fec-8b87-482ed7cac83d";
+    String endPoint = "/v1/products/" + id;
+
+    ResultActions getProducts = mockMvc.perform(get(endPoint));
+    String responseGetProduct = getProducts.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+    System.out.println(responseGetProduct);
   }
 
   @AfterEach

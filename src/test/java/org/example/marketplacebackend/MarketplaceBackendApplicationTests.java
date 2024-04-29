@@ -3,11 +3,11 @@ package org.example.marketplacebackend;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
-import org.example.marketplacebackend.model.ProductType;
+import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.repository.AccountRepository;
 import org.example.marketplacebackend.repository.ProductImageRepository;
 import org.example.marketplacebackend.repository.ProductRepository;
-import org.example.marketplacebackend.repository.ProductTypeRepository;
+import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,11 +17,11 @@ import java.sql.Date;
 class MarketplaceBackendApplicationTests {
   private final ProductRepository products;
   private final AccountRepository accountsRepo;
-  private final ProductTypeRepository typeRepo;
+  private final ProductCategoryRepository typeRepo;
   private final ProductImageRepository imageRepo;
   @Autowired
   public MarketplaceBackendApplicationTests(ProductRepository products, AccountRepository accountsRepo,
-      ProductTypeRepository typeRepo, ProductImageRepository imageRepo) {
+      ProductCategoryRepository typeRepo, ProductImageRepository imageRepo) {
     this.products = products;
     this.accountsRepo = accountsRepo;
     this.typeRepo = typeRepo;
@@ -54,9 +54,9 @@ class MarketplaceBackendApplicationTests {
     var savedBuyer = accountsRepo.save(buyer);
     var savedSeller = accountsRepo.save(seller);
 
-    ProductType productType = new ProductType();
-    productType.setName("TEST_CATEGORY");
-    var savedProductType = typeRepo.save(productType);
+    ProductCategory productCategory = new ProductCategory();
+    productCategory.setName("TEST_CATEGORY");
+    var savedProductType = typeRepo.save(productCategory);
 
     Product product = new Product();
     product.setName("Macbook");
