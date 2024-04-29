@@ -15,7 +15,7 @@ import java.util.UUID;
  * @param productionYear
  */
 
-public record ProductRegisteredResponseDTO(String name, UUID type, int price, int condition,
+public record ProductRegisteredResponseDTO(UUID id, String name, UUID type, int price, int condition,
                                            String description, UUID seller, String[] imageUrls,
                                            Integer color, Integer productionYear) {
 

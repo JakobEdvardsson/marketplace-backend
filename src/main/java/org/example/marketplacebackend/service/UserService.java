@@ -104,7 +104,7 @@ public class UserService {
   }
 
   /**
-   * Deletes the given to user to the database.
+   * Deletes the given user to the database.
    *
    * @param targetUser The user to be deleted.
    */

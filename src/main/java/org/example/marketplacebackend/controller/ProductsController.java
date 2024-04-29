@@ -12,7 +12,9 @@ import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.UUID;
 
 @RequestMapping("v1/products")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
@@ -72,14 +75,14 @@ public class ProductsController {
 
     ProductRegisteredResponseDTO productRegisteredResponseDTO;
     if (productDB.getColor() != null || productDB.getProductionYear() != null) {
-      productRegisteredResponseDTO = new ProductRegisteredResponseDTO(
+      productRegisteredResponseDTO = new ProductRegisteredResponseDTO(productDB.getId(),
           productDB.getName(), productDB.getType().getId(), productDB.getPrice(),
           productDB.getCondition(),
           productDB.getDescription(), productDB.getSeller().getId(), imageUrls,
           productDB.getColor(), productDB.getProductionYear()
       );
     } else {
-      productRegisteredResponseDTO = new ProductRegisteredResponseDTO(
+      productRegisteredResponseDTO = new ProductRegisteredResponseDTO(productDB.getId(),
           productDB.getName(), productDB.getType().getId(), productDB.getPrice(),
           productDB.getCondition(),
           productDB.getDescription(), productDB.getSeller().getId(), imageUrls,
@@ -93,5 +96,20 @@ public class ProductsController {
   public ResponseEntity<?> getProducts() {
     List<Product> products = productRepo.findAll();
     return ResponseEntity.status(HttpStatus.OK).body(products);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
+    Product product = productRepo.getReferenceById(id);
+
+    // If there are images we need to delete them first
+    if (product.getProductImages() != null) {
+      for (ProductImage image: product.getProductImages()) {
+        productImageService.deleteImage(image);
+      }
+    }
+
+    productRepo.delete(product);
+    return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully");
   }
 }

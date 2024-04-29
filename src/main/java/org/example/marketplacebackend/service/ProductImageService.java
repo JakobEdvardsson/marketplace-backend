@@ -86,4 +86,13 @@ public class ProductImageService {
     return imageUrls;
   }
 
+  /**
+   * Deletes the given image to the database.
+   *
+   * @param image The image to be deleted.
+   */
+  public void deleteImage(ProductImage image) {
+    productImageRepo.delete(image);
+  }
+
 }

@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -100,21 +101,41 @@ public class TestProductEndpoints {
     System.out.println(response);
   }
 
+  @Test
+  @WithMockUser
+  void deleteProductSuccess() throws Exception {
+    String responseCreateUser = Utils.createUser(mockMvc);
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode jsonNode = mapper.readTree(responseCreateUser);
+    JsonNode imageUrls = jsonNode.get("imageUrls");
+    for (int i = 0; i < imageUrls.size(); i++) {
+      imageUrlsStrings.add(i, imageUrls.get(i).toString());
+    }
+
+    String id = jsonNode.get("id").toString();
+    String endPoint = "/v1/products/" + id.substring(1, id.length() - 1);
+    ResultActions getProducts = mockMvc.perform(delete(endPoint));
+    String responseDeleteProduct = getProducts.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+    System.out.println(responseDeleteProduct);
+  }
+
   @AfterEach
   void tearDown() {
     // NOTE: Remove all code in here to check the actual values in the DB
     // and the images in src/main/resources/images/
-    // for (String url : imageUrlsStrings) {
-    //   String cleanUrl = url.substring(1, url.length() - 1);
-    //   File file = new File("src/main/resources/images/" + cleanUrl);
-    //   if (file.delete()) {
-    //     System.out.println("Deleted the file: " + file.getName());
-    //     productImageRepo.deleteProductImageByImageUrl(cleanUrl);
-    //   } else {
-    //     System.out.println("Failed to delete the file: " + file.getName());
-    //   }
-    // }
+    for (String url : imageUrlsStrings) {
+      String cleanUrl = url.substring(1, url.length() - 1);
+      File file = new File("src/main/resources/images/" + cleanUrl);
+      if (file.delete()) {
+        System.out.println("Deleted the file: " + file.getName());
+        productImageRepo.deleteProductImageByImageUrl(cleanUrl);
+      } else {
+        System.out.println("Failed to delete the file: " + file.getName());
+      }
+    }
 
-    // productRepository.deleteByName("test");
+    productRepository.deleteByName("test");
   }
+
 }
