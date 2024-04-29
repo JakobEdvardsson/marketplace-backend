@@ -3,11 +3,11 @@ package org.example.marketplacebackend;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
-import org.example.marketplacebackend.model.ProductType;
+import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.repository.AccountRepository;
+import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.example.marketplacebackend.repository.ProductImageRepository;
 import org.example.marketplacebackend.repository.ProductRepository;
-import org.example.marketplacebackend.repository.ProductTypeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,14 +17,15 @@ import java.sql.Date;
 class MarketplaceBackendApplicationTests {
   private final ProductRepository products;
   private final AccountRepository accountsRepo;
-  private final ProductTypeRepository typeRepo;
+  private final ProductCategoryRepository productCategoryRepository;
   private final ProductImageRepository imageRepo;
+
   @Autowired
   public MarketplaceBackendApplicationTests(ProductRepository products, AccountRepository accountsRepo,
-      ProductTypeRepository typeRepo, ProductImageRepository imageRepo) {
+      ProductCategoryRepository productCategoryRepository, ProductImageRepository imageRepo) {
     this.products = products;
     this.accountsRepo = accountsRepo;
-    this.typeRepo = typeRepo;
+    this.productCategoryRepository = productCategoryRepository;
     this.imageRepo = imageRepo;
   }
 
@@ -54,9 +55,9 @@ class MarketplaceBackendApplicationTests {
     var savedBuyer = accountsRepo.save(buyer);
     var savedSeller = accountsRepo.save(seller);
 
-    ProductType productType = new ProductType();
-    productType.setName("TEST_CATEGORY");
-    var savedProductType = typeRepo.save(productType);
+    ProductCategory productCategory = new ProductCategory();
+    productCategory.setName("TEST_CATEGORY");
+    var savedProductType = productCategoryRepository.save(productCategory);
 
     Product product = new Product();
     product.setName("Macbook");
@@ -65,7 +66,7 @@ class MarketplaceBackendApplicationTests {
     product.setDescription("hi description");
     product.setIsPurchased(false);
     product.setColor(1);
-    product.setType(savedProductType);
+    product.setProductCategory(savedProductType);
     product.setPrice(1337);
     product.setProductionYear(2000);
     product.setCondition(0);
@@ -78,7 +79,7 @@ class MarketplaceBackendApplicationTests {
 
     imageRepo.delete(savedImage);
     products.delete(savedProduct);
-    typeRepo.delete(savedProductType);
+    productCategoryRepository.delete(savedProductType);
     accountsRepo.delete(savedBuyer);
     accountsRepo.delete(savedSeller);
   }

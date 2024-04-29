@@ -32,8 +32,8 @@ public class Product {
   private String name;
 
   @ManyToOne
-  @JoinColumn(name = "type")
-  private ProductType type;
+  @JoinColumn(name = "product_category")
+  private ProductCategory productCategory;
 
   private Integer price;
 
