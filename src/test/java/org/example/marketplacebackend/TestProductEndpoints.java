@@ -3,8 +3,8 @@ package org.example.marketplacebackend;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
-import org.example.marketplacebackend.repository.ProductImageRepository;
-import org.example.marketplacebackend.repository.ProductRepository;
+import org.example.marketplacebackend.service.ProductImageService;
+import org.example.marketplacebackend.service.ProductService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -40,10 +42,10 @@ public class TestProductEndpoints {
   private WebApplicationContext webApplicationContext;
 
   @Autowired
-  private ProductRepository productRepository;
+  private ProductService productService;
 
   @Autowired
-  private ProductImageRepository productImageRepo;
+  private ProductImageService productImageService;
 
   private ArrayList<String> imageUrlsStrings;
 
@@ -97,7 +99,8 @@ public class TestProductEndpoints {
   @WithMockUser
   void getAllProducts() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products"));
-    String response = getProducts.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+    String response = getProducts.andExpect(status().isOk()).andReturn().getResponse()
+        .getContentAsString();
     System.out.println(response);
   }
 
@@ -116,7 +119,8 @@ public class TestProductEndpoints {
     String id = jsonNode.get("id").toString();
     String endPoint = "/v1/products/" + id.substring(1, id.length() - 1);
     ResultActions getProducts = mockMvc.perform(delete(endPoint));
-    String responseDeleteProduct = getProducts.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+    String responseDeleteProduct = getProducts.andExpect(status().isOk()).andReturn().getResponse()
+        .getContentAsString();
     System.out.println(responseDeleteProduct);
   }
 
@@ -127,8 +131,19 @@ public class TestProductEndpoints {
     String endPoint = "/v1/products/" + id;
 
     ResultActions getProducts = mockMvc.perform(get(endPoint));
-    String responseGetProduct = getProducts.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-    System.out.println(responseGetProduct);
+    getProducts
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  @WithMockUser
+  public void getProductByIdFail() throws Exception {
+    String id = "798bdcaf";
+    String endPoint = "/v1/products/" + id;
+
+    ResultActions getProducts = mockMvc.perform(get(endPoint));
+    getProducts.andExpect(status().isBadRequest());
   }
 
   @AfterEach
@@ -140,13 +155,13 @@ public class TestProductEndpoints {
       File file = new File("src/main/resources/images/" + cleanUrl);
       if (file.delete()) {
         System.out.println("Deleted the file: " + file.getName());
-        productImageRepo.deleteProductImageByImageUrl(cleanUrl);
+        productImageService.deleteProductImageByImageUrl(cleanUrl);
       } else {
         System.out.println("Failed to delete the file: " + file.getName());
       }
     }
 
-    productRepository.deleteByName("test");
+    productService.deleteByName("test");
   }
 
 }

@@ -6,9 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-  // Transactional should potentially be in the service layer
-  // but right now we don't have a service layer for this repository
-  @Transactional
   void deleteByName(String name);
+
+  // void getAllByProductCategory(String productId);
 
 }

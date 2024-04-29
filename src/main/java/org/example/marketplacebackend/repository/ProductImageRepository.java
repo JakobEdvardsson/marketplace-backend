@@ -6,6 +6,5 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 public interface ProductImageRepository extends JpaRepository<ProductImage, UUID> {
-  @Transactional
   void deleteProductImageByImageUrl(String imageUrl);
 }

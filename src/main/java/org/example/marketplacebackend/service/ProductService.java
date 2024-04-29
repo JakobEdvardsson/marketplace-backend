@@ -4,6 +4,7 @@ import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +35,11 @@ public class ProductService {
     productRepo.delete(product);
   }
 
+  @Transactional
+  public void deleteByName(String name) {
+    productRepo.deleteByName(name);
+  }
+
   /**
    * Saves the given product to the database.
    *
@@ -47,4 +53,6 @@ public class ProductService {
   public List<Product> findAll() {
     return productRepo.findAll();
   }
+
+
 }
