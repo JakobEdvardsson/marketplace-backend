@@ -61,4 +61,9 @@ public class TestContainersWithClassScopeTests {
     Assertions.assertNotNull(added);
   }
 
+  @Test
+  public void f() {
+    Assertions.fail();
+  }
+
 }
