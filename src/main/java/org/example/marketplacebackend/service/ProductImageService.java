@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -61,6 +62,11 @@ public class ProductImageService {
 
   public List<ProductImage> saveFiles(UUID productId, MultipartFile[] images) throws Exception {
     List<ProductImage> uploadedImages = new ArrayList<>();
+
+    File directory = new File("src/main/resources/images/");
+    if (!directory.exists()) {
+      directory.mkdir();
+    }
 
     for (MultipartFile image : images) {
       ProductImage uploadedImage = saveAttachment(productId, image);
