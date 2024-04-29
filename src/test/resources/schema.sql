@@ -30,10 +30,10 @@ create table inbox
 create index inbox_receiver_id_index
     on inbox (receiver_id);
 
-create table product_type
+create table product_category
 (
     id   uuid default gen_random_uuid() not null
-        constraint product_type_pk
+        constraint product_category_pk
             primary key,
     name varchar                        not null
         constraint unique_product_type_name
@@ -42,31 +42,32 @@ create table product_type
 
 create table product
 (
-    id              uuid default gen_random_uuid() not null
+    id               uuid default gen_random_uuid() not null
         constraint product_pk
             primary key,
-    name            varchar                        not null,
-    type            uuid                           not null
+    name             varchar                        not null,
+    product_category uuid                           not null
         constraint product_type_id_fk
-            references product_type,
-    price           integer                        not null,
-    condition       integer                        not null
+            references product_category,
+    price            integer                        not null,
+    condition        integer                        not null
         constraint check_condition_range
             check ((condition >= 0) AND (condition <= 4)),
-    is_purchased    boolean                        not null,
-    description     text                           not null,
-    seller          uuid                           not null
+    is_purchased     boolean                        not null,
+    description      text                           not null,
+    seller           uuid                           not null
         constraint product_seller_fk
             references account,
-    buyer           uuid
+    buyer            uuid
         constraint product_buyer_fk
             references account,
-    color           integer,
-    production_year integer
+    color            integer,
+    production_year  integer
         constraint check_year
             check ((production_year >= 2000) AND (production_year <= 2100)),
-    constraint check_purchasable
-        check ((buyer IS NULL) AND (is_purchased IS FALSE))
+    constraint check_valid_purchase_status
+        check (((buyer IS NULL) AND (is_purchased IS FALSE)) OR
+               ((buyer IS NOT NULL) AND (is_purchased IS TRUE)))
 );
 
 create index product_buyer_index
@@ -78,8 +79,8 @@ create index product_is_purchased_index
 create index product_seller_index
     on product (seller);
 
-create index product_type_index
-    on product (type);
+create index product_product_category_index
+    on product (product_category);
 
 create table product_image
 (
@@ -129,7 +130,7 @@ create table watchlist
 (
     product_type_id uuid                           not null
         constraint watchlist_product_type_id_fk
-            references product_type,
+            references product_category,
     subscriber_id   uuid                           not null
         constraint watchlist_account_id_fk
             references account,
@@ -143,3 +144,45 @@ create index watchlist_product_type_id_index
 
 create index watchlist_subscriber_id_index
     on watchlist (subscriber_id);
+
+create function transfer_relations_before_delete() returns trigger
+    language plpgsql
+as
+$$
+BEGIN
+    -- This logic will be executed before the DELETE operation
+    UPDATE product SET seller = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
+                   WHERE seller = OLD.id;
+    UPDATE product SET buyer = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
+                    WHERE buyer = OLD.id;
+    RETURN OLD;
+END;
+$$;
+
+create trigger before_account_delete
+    before delete
+    on account
+    for each row
+execute procedure transfer_relations_before_delete();
+
+create function check_if_product_is_purchasable() returns trigger
+    language plpgsql
+as
+$$
+BEGIN
+    IF OLD.buyer IS NOT NULL AND NEW.buyer != 'dc254b85-6610-43c9-9f48-77a80b798158' THEN
+        RAISE EXCEPTION 'Product is already purchased!';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+create trigger before_update_buyer
+    before update
+        of buyer
+    on product
+    for each row
+execute procedure check_if_product_is_purchasable();
+
+-- placeholder user, used instead of deleted accounts
+INSERT INTO public.account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('dc254b85-6610-43c9-9f48-77a80b798158', 'deleted', 'deleted', '1970-01-01', 'deleted@mail.com', 'deleted', 'deleted');
