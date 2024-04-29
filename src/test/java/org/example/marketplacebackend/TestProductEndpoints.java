@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -54,7 +55,7 @@ public class TestProductEndpoints {
 
   @Test
   @WithMockUser
-  void uploadProduct() throws Exception {
+  void uploadProductSuccess() throws Exception {
     UUID productType = UUID.fromString("d5509745-450f-4760-8bdd-ddc88d376b37");
     UUID seller = UUID.fromString("dc254b85-6610-43c9-9f48-77a80b798158");
     ProductDTO product = new ProductDTO("test", productType,
@@ -91,21 +92,29 @@ public class TestProductEndpoints {
     }
   }
 
+  @Test
+  @WithMockUser
+  void getAllProducts() throws Exception {
+    ResultActions getProducts = mockMvc.perform(get("/v1/products"));
+    String response = getProducts.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+    System.out.println(response);
+  }
+
   @AfterEach
   void tearDown() {
     // NOTE: Remove all code in here to check the actual values in the DB
     // and the images in src/main/resources/images/
-    for (String url : imageUrlsStrings) {
-      String cleanUrl = url.substring(1, url.length() - 1);
-      File file = new File("src/main/resources/images/" + cleanUrl);
-      if (file.delete()) {
-        System.out.println("Deleted the file: " + file.getName());
-        productImageRepo.deleteProductImageByImageUrl(cleanUrl);
-      } else {
-        System.out.println("Failed to delete the file: " + file.getName());
-      }
-    }
+    // for (String url : imageUrlsStrings) {
+    //   String cleanUrl = url.substring(1, url.length() - 1);
+    //   File file = new File("src/main/resources/images/" + cleanUrl);
+    //   if (file.delete()) {
+    //     System.out.println("Deleted the file: " + file.getName());
+    //     productImageRepo.deleteProductImageByImageUrl(cleanUrl);
+    //   } else {
+    //     System.out.println("Failed to delete the file: " + file.getName());
+    //   }
+    // }
 
-    productRepository.deleteByName("test");
+    // productRepository.deleteByName("test");
   }
 }
