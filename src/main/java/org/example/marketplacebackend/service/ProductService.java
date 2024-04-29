@@ -7,6 +7,7 @@ import org.example.marketplacebackend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -68,4 +69,13 @@ public class ProductService {
   }
 
 
+  /**
+   * Finds product based on UUID id and seller UUID
+   * @param id UUID of product
+   * @param seller UUID of product
+   * @return a product
+   */
+  public Product findProductByIdAndSeller(UUID id, Account seller) {
+    return productRepo.findProductByIdAndSeller(id, seller).orElse(null);
+  }
 }

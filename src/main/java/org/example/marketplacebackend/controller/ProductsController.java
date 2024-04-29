@@ -3,10 +3,10 @@ package org.example.marketplacebackend.controller;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProductGetResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProductRegisteredResponseDTO;
+import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.model.ProductCategory;
-import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.example.marketplacebackend.service.CategoryService;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,22 +47,25 @@ public class ProductsController {
   }
 
   @PostMapping("")
-  public ResponseEntity<?> uploadProduct(
+  public ResponseEntity<?> uploadProduct(Principal principal,
       @RequestPart(value = "json") ProductDTO product,
       @RequestParam(value = "data") MultipartFile[] files
   ) throws Exception {
+    String username = principal.getName();
+    Account authenticatedUser = userService.getAccountOrException(username);
+
     Product productModel = new Product();
     productModel.setName(product.name());
 
     // User will grab existing product types from a list on the frontend
-    ProductCategory productCategoryDB = categoryService.getReferenceById(product.type());
+    ProductCategory productCategoryDB = categoryService.getReferenceById(product.productCategory());
     productModel.setProductCategory(productCategoryDB);
 
     productModel.setPrice(product.price());
     productModel.setCondition(product.condition());
     productModel.setIsPurchased(false);
     productModel.setDescription(product.description());
-    productModel.setSeller(userService.getAccountOrNull(product.seller()));
+    productModel.setSeller(authenticatedUser);
     productModel.setColor(product.color());
     productModel.setProductionYear(product.productionYear());
 
@@ -76,23 +80,16 @@ public class ProductsController {
     // Get all image urls from all image objects
     String[] imageUrls = productImageService.productImagesToImageUrls(uploadedImages);
 
-    ProductRegisteredResponseDTO productRegisteredResponseDTO;
-    if (productDB.getColor() != null || productDB.getProductionYear() != null) {
-      productRegisteredResponseDTO = new ProductRegisteredResponseDTO(productDB.getId(),
-          productDB.getName(), productDB.getProductCategory().getId(), productDB.getPrice(),
-          productDB.getCondition(),
-          productDB.getDescription(), productDB.getSeller().getId(), imageUrls,
-          productDB.getColor(), productDB.getProductionYear()
-      );
-    } else {
-      productRegisteredResponseDTO = new ProductRegisteredResponseDTO(productDB.getId(),
-          productDB.getName(), productDB.getProductCategory().getId(), productDB.getPrice(),
-          productDB.getCondition(),
-          productDB.getDescription(), productDB.getSeller().getId(), imageUrls,
-          null, null);
-    }
+    ProductRegisteredResponseDTO response = new ProductRegisteredResponseDTO(
+        productDB.getId(),
+        productDB.getName(), productDB.getProductCategory().getId(), productDB.getPrice(),
+        productDB.getCondition(),
+        productDB.getDescription(), productDB.getSeller().getId(), imageUrls,
+        productDB.getColor() != null ? productDB.getColor() : null,
+        productDB.getProductionYear() != null ? productDB.getProductionYear() : null
+    );
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(productRegisteredResponseDTO);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @GetMapping("")
@@ -101,13 +98,15 @@ public class ProductsController {
     List<Product> products;
 
     if (category == null) {
+      // TODO: fix that findAll is top20 latest products
       products = productService.findAll();
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     ProductCategory productCategory = categoryService.findProductCategoryByNameOrNull(category);
     if (productCategory == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("That product category does not exist");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("That product category does not exist");
     }
     products = productService.getAllByProductCategory(productCategory);
 
@@ -115,11 +114,14 @@ public class ProductsController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
-    Product product = productService.getProductOrNull(id);
+  public ResponseEntity<?> deleteProduct(Principal principal, @PathVariable UUID id) {
+    Account authenticatedUser = userService.getAccountOrException(principal.getName());
+
+    Product product = productService.findProductByIdAndSeller(id,
+        authenticatedUser);
 
     if (product == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No product with that ID exists.");
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     // If there are images we need to delete them first
@@ -138,10 +140,10 @@ public class ProductsController {
     Product product = productService.getProductOrNull(id);
 
     if (product == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No product with that ID exists.");
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    ProductGetResponseDTO productGetResponseDTO = new ProductGetResponseDTO(product);
-    return ResponseEntity.status(HttpStatus.OK).body(productGetResponseDTO);
+    ProductGetResponseDTO response = new ProductGetResponseDTO(product);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

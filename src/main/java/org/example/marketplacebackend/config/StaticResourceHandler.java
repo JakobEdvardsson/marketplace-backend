@@ -13,7 +13,7 @@ public class StaticResourceHandler implements WebMvcConfigurer {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/resources/**")
+    registry.addResourceHandler("/images/**")
         .addResourceLocations("classpath:/images/")
         // The resources are served with a one-year future expiration to
         // ensure maximum use of the browser cache and a reduction in HTTP requests made by the browser
