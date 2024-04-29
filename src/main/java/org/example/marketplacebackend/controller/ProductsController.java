@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,14 +30,15 @@ import java.util.UUID;
 @RestController
 public class ProductsController {
 
-  private final ProductCategoryRepository productTypeRepo;
+  private final ProductCategoryRepository productCategoryRepo;
   private final ProductService productService;
   private final UserService userService;
   private final ProductImageService productImageService;
 
-  public ProductsController(ProductCategoryRepository productTypeRepo, ProductService productService,
+  public ProductsController(ProductCategoryRepository productCategoryRepo,
+      ProductService productService,
       UserService userService, ProductImageService productImageService) {
-    this.productTypeRepo = productTypeRepo;
+    this.productCategoryRepo = productCategoryRepo;
     this.productService = productService;
     this.userService = userService;
     this.productImageService = productImageService;
@@ -53,7 +53,7 @@ public class ProductsController {
     productModel.setName(product.name());
 
     // User will grab existing product types from a list on the frontend
-    ProductCategory productCategoryDB = productTypeRepo.getReferenceById(product.type());
+    ProductCategory productCategoryDB = productCategoryRepo.getReferenceById(product.type());
     productModel.setType(productCategoryDB);
 
     productModel.setPrice(product.price());
@@ -95,16 +95,18 @@ public class ProductsController {
   }
 
   @GetMapping("")
-  public ResponseEntity<?> getProducts(@RequestParam(required = false) String category) {
+  public ResponseEntity<?> getProducts(
+      @RequestParam(name = "category", required = false) String category) {
     List<Product> products;
 
     if (category == null) {
       products = productService.findAll();
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
-    // products = productService.find
+    ProductCategory productCategory = productCategoryRepo.findProductCategoryByName(category);
+    products = productService.getAllByProductCategory(productCategory);
 
-    return ResponseEntity.status(HttpStatus.OK).body("test");
+    return ResponseEntity.status(HttpStatus.OK).body(products);
   }
 
   @DeleteMapping("/{id}")
@@ -117,7 +119,7 @@ public class ProductsController {
 
     // If there are images we need to delete them first
     if (product.getProductImages() != null) {
-      for (ProductImage image: product.getProductImages()) {
+      for (ProductImage image : product.getProductImages()) {
         productImageService.deleteImage(image);
       }
     }

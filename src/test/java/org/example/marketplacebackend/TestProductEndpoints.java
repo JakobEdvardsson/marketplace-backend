@@ -82,7 +82,8 @@ public class TestProductEndpoints {
         .file(imageFile)
         .file(imageFile2));
 
-    String response = createProduct.andExpect(status().isCreated())
+    String response = createProduct
+        .andExpect(status().isCreated())
         .andReturn()
         .getResponse()
         .getContentAsString();
@@ -99,8 +100,21 @@ public class TestProductEndpoints {
   @WithMockUser
   void getAllProducts() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products"));
-    String response = getProducts.andExpect(status().isOk()).andReturn().getResponse()
-        .getContentAsString();
+
+    getProducts
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  @WithMockUser
+  void getAllProductsByCategory() throws Exception {
+    ResultActions getProducts = mockMvc.perform(get("/v1/products?category=kebab"));
+
+    String response = getProducts
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andReturn().getResponse().getContentAsString();
     System.out.println(response);
   }
 
@@ -118,10 +132,9 @@ public class TestProductEndpoints {
 
     String id = jsonNode.get("id").toString();
     String endPoint = "/v1/products/" + id.substring(1, id.length() - 1);
+
     ResultActions getProducts = mockMvc.perform(delete(endPoint));
-    String responseDeleteProduct = getProducts.andExpect(status().isOk()).andReturn().getResponse()
-        .getContentAsString();
-    System.out.println(responseDeleteProduct);
+    getProducts.andExpect(status().isOk());
   }
 
   @Test
