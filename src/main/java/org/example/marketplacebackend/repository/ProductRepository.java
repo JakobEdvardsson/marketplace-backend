@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
   void deleteByName(String name);
 
-  List<Product> getAllByType(ProductCategory categoryId);
+  List<Product> getAllByProductCategory(ProductCategory categoryId);
 }

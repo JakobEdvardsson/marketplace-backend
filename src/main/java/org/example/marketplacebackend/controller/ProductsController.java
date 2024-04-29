@@ -55,7 +55,7 @@ public class ProductsController {
 
     // User will grab existing product types from a list on the frontend
     ProductCategory productCategoryDB = categoryService.getReferenceById(product.type());
-    productModel.setType(productCategoryDB);
+    productModel.setProductCategory(productCategoryDB);
 
     productModel.setPrice(product.price());
     productModel.setCondition(product.condition());
@@ -79,14 +79,14 @@ public class ProductsController {
     ProductRegisteredResponseDTO productRegisteredResponseDTO;
     if (productDB.getColor() != null || productDB.getProductionYear() != null) {
       productRegisteredResponseDTO = new ProductRegisteredResponseDTO(productDB.getId(),
-          productDB.getName(), productDB.getType().getId(), productDB.getPrice(),
+          productDB.getName(), productDB.getProductCategory().getId(), productDB.getPrice(),
           productDB.getCondition(),
           productDB.getDescription(), productDB.getSeller().getId(), imageUrls,
           productDB.getColor(), productDB.getProductionYear()
       );
     } else {
       productRegisteredResponseDTO = new ProductRegisteredResponseDTO(productDB.getId(),
-          productDB.getName(), productDB.getType().getId(), productDB.getPrice(),
+          productDB.getName(), productDB.getProductCategory().getId(), productDB.getPrice(),
           productDB.getCondition(),
           productDB.getDescription(), productDB.getSeller().getId(), imageUrls,
           null, null);

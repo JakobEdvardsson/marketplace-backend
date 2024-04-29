@@ -35,7 +35,8 @@ public class SecurityConfig {
             "/v1/accounts/login",
             "/login",
             "/v1/accounts/register",
-            "/resources/**"
+            "/resources/**",
+            "/v1/categories"
         )
         .permitAll()
         //require auth to access these endpoints

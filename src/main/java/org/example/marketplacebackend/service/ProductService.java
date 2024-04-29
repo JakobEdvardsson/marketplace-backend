@@ -27,7 +27,7 @@ public class ProductService {
   }
 
   public List<Product> getAllByProductCategory(ProductCategory category) {
-    return productRepo.getAllByType(category);
+    return productRepo.getAllByProductCategory(category);
   }
 
   /**

@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Getter @Setter @NoArgsConstructor @EqualsAndHashCode @ToString
 @Entity
-@Table(name = "productCategory")
+@Table(name = "product_category")
 public class ProductCategory {
 
   @Id
