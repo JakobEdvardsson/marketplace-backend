@@ -7,6 +7,7 @@ import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.repository.ProductCategoryRepository;
+import org.example.marketplacebackend.service.CategoryService;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
@@ -30,15 +31,15 @@ import java.util.UUID;
 @RestController
 public class ProductsController {
 
-  private final ProductCategoryRepository productCategoryRepo;
+  private final CategoryService categoryService;
   private final ProductService productService;
   private final UserService userService;
   private final ProductImageService productImageService;
 
-  public ProductsController(ProductCategoryRepository productCategoryRepo,
+  public ProductsController(CategoryService categoryService,
       ProductService productService,
       UserService userService, ProductImageService productImageService) {
-    this.productCategoryRepo = productCategoryRepo;
+    this.categoryService = categoryService;
     this.productService = productService;
     this.userService = userService;
     this.productImageService = productImageService;
@@ -53,7 +54,7 @@ public class ProductsController {
     productModel.setName(product.name());
 
     // User will grab existing product types from a list on the frontend
-    ProductCategory productCategoryDB = productCategoryRepo.getReferenceById(product.type());
+    ProductCategory productCategoryDB = categoryService.getReferenceById(product.type());
     productModel.setType(productCategoryDB);
 
     productModel.setPrice(product.price());
@@ -103,7 +104,11 @@ public class ProductsController {
       products = productService.findAll();
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
-    ProductCategory productCategory = productCategoryRepo.findProductCategoryByName(category);
+
+    ProductCategory productCategory = categoryService.findProductCategoryByNameOrNull(category);
+    if (productCategory == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("That product category does not exist");
+    }
     products = productService.getAllByProductCategory(productCategory);
 
     return ResponseEntity.status(HttpStatus.OK).body(products);

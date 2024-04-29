@@ -21,7 +21,7 @@ class MarketplaceBackendApplicationTests {
   private final ProductImageRepository imageRepo;
   @Autowired
   public MarketplaceBackendApplicationTests(ProductRepository products, AccountRepository accountsRepo,
-      ProductCategoryRepository typeRepo, ProductImageRepository imageRepo) {
+                                            ProductCategoryRepository typeRepo, ProductImageRepository imageRepo) {
     this.products = products;
     this.accountsRepo = accountsRepo;
     this.typeRepo = typeRepo;

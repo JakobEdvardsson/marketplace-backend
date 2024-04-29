@@ -108,7 +108,7 @@ public class TestProductEndpoints {
 
   @Test
   @WithMockUser
-  void getAllProductsByCategory() throws Exception {
+  void getAllProductsByCategorySuccess() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products?category=kebab"));
 
     String response = getProducts
@@ -116,6 +116,14 @@ public class TestProductEndpoints {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn().getResponse().getContentAsString();
     System.out.println(response);
+  }
+
+  @Test
+  @WithMockUser
+  void getAllProductsByCategoryFail() throws Exception {
+    ResultActions getProducts = mockMvc.perform(get("/v1/products?category=asdasdasdasdasd"));
+
+    getProducts.andExpect(status().isBadRequest());
   }
 
   @Test
