@@ -16,6 +16,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,6 +28,9 @@ import java.io.File;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.UUID;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,7 +39,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
 public class TestProductEndpoints {
+  @Container
+  private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
+      "postgres:16-alpine"
+  )
+      .withInitScript("schema.sql");
+  @DynamicPropertySource
+  private static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", DB::getJdbcUrl);
+    registry.add("spring.datasource.username", DB::getUsername);
+    registry.add("spring.datasource.password", DB::getPassword);
+  }
 
   @Autowired
   private MockMvc mockMvc;
