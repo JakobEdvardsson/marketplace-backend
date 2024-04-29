@@ -14,4 +14,5 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
   List<Product> getAllByProductCategory(ProductCategory categoryId);
   Optional<Product> findProductByIdAndSeller(UUID id, Account seller);
 
+  List<Product> findTop20ByOrderByCreatedAtDesc();
 }

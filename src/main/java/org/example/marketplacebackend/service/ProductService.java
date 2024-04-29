@@ -31,6 +31,7 @@ public class ProductService {
     return productRepo.getAllByProductCategory(category);
   }
 
+
   /**
    * Deletes the given product based on UUID
    * @param id UUID
@@ -68,6 +69,9 @@ public class ProductService {
     return productRepo.findAll();
   }
 
+  public List<Product> findTop20ByOrderByCreatedAtDesc() {
+    return productRepo.findTop20ByOrderByCreatedAtDesc();
+  }
 
   /**
    * Finds product based on UUID id and seller UUID

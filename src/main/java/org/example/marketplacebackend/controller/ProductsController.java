@@ -98,8 +98,7 @@ public class ProductsController {
     List<Product> products;
 
     if (category == null) {
-      // TODO: fix that findAll is top20 latest products
-      products = productService.findAll();
+      products = productService.findTop20ByOrderByCreatedAtDesc();
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 

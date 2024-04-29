@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +53,8 @@ public class Product {
 
   private Integer productionYear;
 
+  private Instant createdAt;
+
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
   private List<ProductImage> productImages;
-
 }
