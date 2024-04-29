@@ -1,6 +1,8 @@
 package org.example.marketplacebackend.controller;
 
+import org.apache.coyote.Response;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
+import org.example.marketplacebackend.DTO.outgoing.ProductGetResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProductRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
@@ -8,6 +10,7 @@ import org.example.marketplacebackend.model.ProductType;
 import org.example.marketplacebackend.repository.ProductRepository;
 import org.example.marketplacebackend.repository.ProductTypeRepository;
 import org.example.marketplacebackend.service.ProductImageService;
+import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +33,14 @@ import java.util.UUID;
 public class ProductsController {
 
   private final ProductTypeRepository productTypeRepo;
-  private final ProductRepository productRepo;
+  private final ProductService productService;
   private final UserService userService;
   private final ProductImageService productImageService;
 
-  public ProductsController(ProductTypeRepository productTypeRepo, ProductRepository productRepo,
+  public ProductsController(ProductTypeRepository productTypeRepo, ProductService productService,
       UserService userService, ProductImageService productImageService) {
     this.productTypeRepo = productTypeRepo;
-    this.productRepo = productRepo;
+    this.productService = productService;
     this.userService = userService;
     this.productImageService = productImageService;
   }
@@ -63,7 +66,7 @@ public class ProductsController {
     productModel.setProductionYear(product.productionYear());
 
     // Save all data to DB
-    Product productDB = productRepo.save(productModel);
+    Product productDB = productService.saveProduct(productModel);
 
     // Upload images and add to product model
     List<ProductImage> uploadedImages = productImageService.saveFiles(productDB.getId(),
@@ -94,13 +97,17 @@ public class ProductsController {
 
   @GetMapping("")
   public ResponseEntity<?> getProducts() {
-    List<Product> products = productRepo.findAll();
+    List<Product> products = productService.findAll();
     return ResponseEntity.status(HttpStatus.OK).body(products);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
-    Product product = productRepo.getReferenceById(id);
+    Product product = productService.getProductOrNull(id);
+
+    if (product == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No product with that ID exists.");
+    }
 
     // If there are images we need to delete them first
     if (product.getProductImages() != null) {
@@ -109,7 +116,17 @@ public class ProductsController {
       }
     }
 
-    productRepo.delete(product);
+    productService.deleteProductOrNull(id);
     return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully");
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<?> getProduct(@PathVariable UUID id) {
+    Product product = productService.getProductOrNull(id);
+    if (product == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No product with that ID exists.");
+    }
+    ProductGetResponseDTO productGetResponseDTO = new ProductGetResponseDTO(product);
+    return ResponseEntity.status(HttpStatus.OK).body(productGetResponseDTO);
   }
 }
