@@ -12,9 +12,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.sql.Date;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Testcontainers
 @SpringBootTest
 class MarketplaceBackendApplicationTests {
+  @Container
+  private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
+      "postgres:16-alpine"
+  )
+      .withInitScript("schema.sql");
+  @DynamicPropertySource
+  private static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", DB::getJdbcUrl);
+    registry.add("spring.datasource.username", DB::getUsername);
+    registry.add("spring.datasource.password", DB::getPassword);
+  }
+
   private final ProductRepository products;
   private final AccountRepository accountsRepo;
   private final ProductCategoryRepository productCategoryRepository;

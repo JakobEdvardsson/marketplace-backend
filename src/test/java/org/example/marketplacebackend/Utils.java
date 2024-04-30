@@ -5,7 +5,6 @@ import org.example.marketplacebackend.DTO.incoming.ProductDTO;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -15,9 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class Utils {
 
-  public static String createProduct(MockMvc mockMvc) throws Exception {
-    UUID productType = UUID.fromString("d5509745-450f-4760-8bdd-ddc88d376b37");
-    ProductDTO product = new ProductDTO("test", productType,
+  public static String createProduct(MockMvc mockMvc, String productCategoryId, String principalName) throws Exception {
+    UUID productCategory = UUID.fromString(productCategoryId);
+    ProductDTO product = new ProductDTO("test", productCategory,
         500, 0, "wow amazing",
         null, null);
 
@@ -33,7 +32,7 @@ public class Utils {
     ResultActions createProduct = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/products")
         .file(jsonProduct)
         .file(imageFile)
-        .principal(() -> "umair")
+        .principal(() -> principalName)
     );
 
       return createProduct.andExpect(status().isCreated())
