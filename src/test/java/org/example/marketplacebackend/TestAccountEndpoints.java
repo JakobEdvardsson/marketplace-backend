@@ -11,19 +11,35 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpRequest;
 import java.sql.Date;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
 public class TestAccountEndpoints {
+  @Container
+  private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
+      "postgres:16-alpine"
+  )
+      .withInitScript("schema.sql");
+  @DynamicPropertySource
+  private static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", DB::getJdbcUrl);
+    registry.add("spring.datasource.username", DB::getUsername);
+    registry.add("spring.datasource.password", DB::getPassword);
+  }
 
   @Autowired
   private MockMvc mockMvc;

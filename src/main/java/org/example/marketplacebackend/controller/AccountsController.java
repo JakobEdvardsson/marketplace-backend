@@ -38,11 +38,11 @@ public class AccountsController {
 
     Account userDB = userService.saveUser(userModel);
 
-    UserRegisteredResponseDTO responseDTO = new UserRegisteredResponseDTO(
+    UserRegisteredResponseDTO response = new UserRegisteredResponseDTO(
         userDB.getFirst_name(), userDB.getLast_name(),
         userDB.getEmail(), userDB.getUsername(), userDB.getDate_of_birth());
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
 

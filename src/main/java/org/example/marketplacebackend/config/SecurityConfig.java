@@ -34,7 +34,11 @@ public class SecurityConfig {
             "/auth-not-required",
             "/v1/accounts/login",
             "/login",
-            "/v1/accounts/register"
+            "/v1/accounts/register",
+            "/images/**",
+            "/v1/categories",
+            "/v1/products",
+            "/v1/products/**"
         )
         .permitAll()
         //require auth to access these endpoints
