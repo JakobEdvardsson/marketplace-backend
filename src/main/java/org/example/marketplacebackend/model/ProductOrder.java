@@ -5,8 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,16 +16,14 @@ import java.util.UUID;
 
 @Getter @Setter @NoArgsConstructor @EqualsAndHashCode @ToString
 @Entity
-@Table
-public class Order {
-
+@Table(name = "product_order")
+public class ProductOrder {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private UUID order;
+  private UUID id;
 
   @ManyToOne
-  private Account account;
+  private Account buyer;
 
   private Instant timeOfPurchase;
-
 }
