@@ -97,14 +97,14 @@ create table product_image
 create index product_image_product_id_index
     on product_image (product_id);
 
-create table "order"
+create table product_order
 (
-    order_id         uuid default gen_random_uuid() not null
-        constraint order_pk
+    id               uuid default gen_random_uuid() not null
+        constraint product_order_pk
             primary key,
     time_of_purchase timestamp with time zone       not null,
     buyer_id         uuid                           not null
-        constraint order_account_id_fk
+        constraint product_order_account_id_fk
             references account
 );
 
@@ -112,7 +112,7 @@ create table order_item
 (
     order_id   uuid                           not null
         constraint order_item_order_history_order_id_fk
-            references "order",
+            references product_order,
     product_id uuid                           not null
         constraint order_item_product_id_fk
             references product,
@@ -124,8 +124,8 @@ create table order_item
 create index order_item_order_id_index
     on order_item (order_id);
 
-create index order_buyer_id_index
-    on "order" (buyer_id);
+create index product_order_buyer_id_index
+    on product_order (buyer_id);
 
 create table watchlist
 (
