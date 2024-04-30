@@ -44,7 +44,8 @@ public class SecurityConfig {
         //require auth to access these endpoints
         .requestMatchers(
             "/auth-required",
-            "/v1/accounts"
+            "/v1/accounts",
+            "/v1/inbox"
         )
         .hasRole("USER")
     );

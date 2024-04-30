@@ -1,34 +1,38 @@
 package org.example.marketplacebackend.controller;
 
-import org.aspectj.bridge.Message;
-import org.example.marketplacebackend.DTO.incoming.UserDTO;
-import org.example.marketplacebackend.DTO.outgoing.MessageCreatedResponseDTO;
-import org.example.marketplacebackend.DTO.outgoing.UserRegisteredResponseDTO;
+import java.security.Principal;
+import java.util.Comparator;
+import java.util.List;
+
+import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
+import org.example.marketplacebackend.repository.InboxRepository;
 import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.comparator.Comparators;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("v1/inbox")
-@CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = {"localhost:3000", "localhost:8080"}, allowCredentials = "true")
 @RestController
 public class InboxController {
 
-  public InboxController(UserService userService) {
+  private final UserService userService;
+  private final InboxRepository inboxRepository;
+
+  public InboxController(UserService userService, InboxRepository inboxRepository) {
     //TODO: ASK IF NEEDED
+    this.inboxRepository = inboxRepository;
+    this.userService = userService;
   }
 
   //TODO: POST, DELETE, GET
-
+/*
   @PostMapping("") //TODO: ASK ABOUT LINK FOR INBOX
   public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) {
     Inbox inbox = new Inbox();
@@ -50,15 +54,27 @@ public class InboxController {
 
   }
 
-  //TODO: ASK HOW TO SEND ID
+ */
+
   @GetMapping("")
-  public ResponseEntity<?> getMessage(@RequestBody Account user, UUID messageID) {
+  public ResponseEntity<?> getMessages(Principal user) {
+    Account authenticatedUser = userService.getAccountOrException(user.getName());
 
+    List<Inbox> allInbox = inboxRepository.findByReceiver(authenticatedUser);
 
+    List<InboxGetAllResponseDTO> messages = allInbox
+        .stream()
+        .sorted((Comparator.comparing(Inbox::getSentAt)))
+        .map(inboxEntry -> new InboxGetAllResponseDTO(
+            inboxEntry.getId(), inboxEntry.getMessage(),
+            inboxEntry.isRead(), inboxEntry.getSentAt())
+        )
+        .toList();
 
-    return ResponseEntity.status(HttpStatus.OK).body(messageDTO);
+    if (messages.isEmpty()){
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
+    return ResponseEntity.status(HttpStatus.OK).body(messages);
   }
-
-
 }
