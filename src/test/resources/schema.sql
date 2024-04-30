@@ -17,14 +17,15 @@ create table account
 
 create table inbox
 (
-    receiver_id uuid                           not null
+    receiver_id uuid                                               not null
         constraint inbox_receiver_fk
             references account,
-    message     text                           not null,
-    is_read     boolean                        not null,
-    id          uuid default gen_random_uuid() not null
+    message     text                                               not null,
+    is_read     boolean                                            not null,
+    id          uuid                     default gen_random_uuid() not null
         constraint inbox_pk
-            primary key
+            primary key,
+    sent_at     timestamp with time zone default now()             not null
 );
 
 create index inbox_receiver_id_index
