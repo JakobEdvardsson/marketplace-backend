@@ -28,6 +28,6 @@ public class Watchlist {
   private Account subscriber;
 
   @ManyToOne
-  private ProductType productType;
+  private ProductCategory productCategory;
   
 }
