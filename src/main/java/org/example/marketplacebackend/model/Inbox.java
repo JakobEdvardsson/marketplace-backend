@@ -24,7 +24,7 @@ public class Inbox {
   private UUID id;
 
   @ManyToOne
-  private Account account;
+  private Account receiver;
 
   private String message;
 
