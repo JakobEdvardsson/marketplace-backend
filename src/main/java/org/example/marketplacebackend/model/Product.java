@@ -7,16 +7,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +31,8 @@ public class Product {
   private String name;
 
   @ManyToOne
-  @JoinColumn(name = "type")
-  private ProductType type;
+  @JoinColumn(name = "product_category")
+  private ProductCategory productCategory;
 
   private Integer price;
 
@@ -55,7 +54,9 @@ public class Product {
 
   private Integer productionYear;
 
+  @Column(insertable = false)
+  private Instant createdAt;
+
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
   private List<ProductImage> productImages;
-
 }

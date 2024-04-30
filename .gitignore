@@ -3,6 +3,7 @@ HELP.md
 .env
 env
 build/
+src/main/resources/images/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
