@@ -40,10 +40,7 @@ public class MarketplaceUserPrincipal implements UserDetails {
    */
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("USER");
-    List<GrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(authority);
-    return authorities;
+    return List.of(new SimpleGrantedAuthority("ROLE_USER"));
   }
 
   /**
