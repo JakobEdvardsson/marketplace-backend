@@ -3,17 +3,22 @@ package org.example.marketplacebackend.controller;
 import java.security.Principal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
 import org.example.marketplacebackend.repository.InboxRepository;
 import org.example.marketplacebackend.service.UserService;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.comparator.Comparators;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -77,4 +82,29 @@ public class InboxController {
 
     return ResponseEntity.status(HttpStatus.OK).body(messages);
   }
+
+  //GET - retrieve a specific message in Inbox based on ID
+  @GetMapping("/{id}")
+  public ResponseEntity<?> getMessageById(@PathVariable UUID id, Principal user){
+    Account authenticatedUser = userService.getAccountOrException(user.getName());
+
+    //Searches for message with ID which also match the receiver
+    Optional<Inbox> inbox = inboxRepository.findByIdAndReceiver(id, authenticatedUser);
+
+    if(inbox.isPresent()){
+      Inbox message = inbox.get();
+      InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO( //TODO kolla senare om det inte funkar
+          message.getId(),
+          message.getMessage(),
+          message.isRead(),
+          message.getSentAt()
+      );
+
+      return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+
+    } else {
+      return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+  }
+
 }
