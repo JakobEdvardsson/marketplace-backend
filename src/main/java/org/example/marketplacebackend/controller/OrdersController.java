@@ -38,7 +38,7 @@ public class OrdersController {
     order.setBuyer(authenticatedUser);
 
     ProductOrder productOrder = productOrderService.saveOrder(order);
-    productOrderService.saveOrderItems(orderDTO.orderItems());
+    productOrderService.saveOrderItems(orderDTO.orderItemDTOS());
 
     OrderRegisteredResponseDTO response = new OrderRegisteredResponseDTO(productOrder);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);

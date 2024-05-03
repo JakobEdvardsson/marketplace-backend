@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.example.marketplacebackend.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface AccountRepository extends JpaRepository<Account, UUID> {
 
