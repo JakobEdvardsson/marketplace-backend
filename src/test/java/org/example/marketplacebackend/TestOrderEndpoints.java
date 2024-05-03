@@ -98,4 +98,28 @@ public class TestOrderEndpoints {
         .andExpect(status().isCreated())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
+
+  @Test
+  @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
+      statements = """
+          INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
+          INSERT INTO product_category VALUES ('d5509745-450f-4760-8bdd-ddc88d376b37', 'electronics');
+          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          """)
+  @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
+      statements = """
+          DELETE FROM product WHERE id = '3ce17658-9107-4154-9ead-e22c5d6508a5';
+          DELETE FROM product_category WHERE id = 'd5509745-450f-4760-8bdd-ddc88d376b37';
+          DELETE FROM account WHERE id = '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee';
+          """)
+  public void createOrderFail() throws Exception {
+    ResultActions createOrder = mockMvc.perform(post("/v1/orders")
+        .principal(() -> "ken")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("")
+    );
+
+    createOrder
+        .andExpect(status().isBadRequest());
+  }
 }
