@@ -67,12 +67,12 @@ public class TestAccountEndpoints {
   @WithMockUser
   void deleteLoggedInUser() throws Exception {
     Account account = new Account();
-    account.setFirst_name("test");
-    account.setLast_name("testsson");
+    account.setFirstName("test");
+    account.setLastName("testsson");
     account.setUsername("user");
     account.setPassword("test123");
     account.setEmail("test@mail.com");
-    account.setDate_of_birth(Date.valueOf("1993-03-11"));
+    account.setDateOfBirth(Date.valueOf("1993-03-11"));
 
     accountRepository.save(account);
 
