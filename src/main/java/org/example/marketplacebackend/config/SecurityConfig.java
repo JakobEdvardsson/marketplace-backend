@@ -45,7 +45,8 @@ public class SecurityConfig {
         .permitAll()
         //require auth to access these endpoints
         .requestMatchers(
-            "/v1/inbox"
+            "/v1/inbox",
+            "/v1/inbox/*",
             "/v1/accounts",
             "/v1/tests/username"
         )

@@ -28,7 +28,7 @@ public class Inbox {
 
   private String message;
 
-  private boolean isRead;
+  private Boolean isRead;
 
   private Instant sentAt;
 }

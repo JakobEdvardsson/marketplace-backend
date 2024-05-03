@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("v1/inbox")
+@RequestMapping("/v1/inbox")
 @CrossOrigin(origins = {"localhost:3000", "localhost:8080"}, allowCredentials = "true")
 @RestController
 public class InboxController {
@@ -72,7 +72,7 @@ public class InboxController {
         .sorted((Comparator.comparing(Inbox::getSentAt)))
         .map(inboxEntry -> new InboxGetAllResponseDTO(
             inboxEntry.getId(), inboxEntry.getMessage(),
-            inboxEntry.isRead(), inboxEntry.getSentAt())
+            inboxEntry.getIsRead(), inboxEntry.getSentAt())
         )
         .toList();
 
@@ -85,7 +85,7 @@ public class InboxController {
 
   //GET - retrieve a specific message in Inbox based on ID
   @GetMapping("/{id}")
-  public ResponseEntity<?> getMessageById(@PathVariable UUID id, Principal user){
+  public ResponseEntity<?> getMessageById(Principal user, @PathVariable UUID id) {
     Account authenticatedUser = userService.getAccountOrException(user.getName());
 
     //Searches for message with ID which also match the receiver
@@ -96,7 +96,7 @@ public class InboxController {
       InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO( //TODO kolla senare om det inte funkar
           message.getId(),
           message.getMessage(),
-          message.isRead(),
+          message.getIsRead(),
           message.getSentAt()
       );
 

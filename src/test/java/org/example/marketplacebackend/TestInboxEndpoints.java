@@ -1,11 +1,19 @@
 package org.example.marketplacebackend;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.UUID;
 import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
-import org.junit.Test;
+import org.example.marketplacebackend.repository.InboxRepository;
+import org.example.marketplacebackend.service.UserService;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,20 +22,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.sql.Date;
-import java.util.UUID;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,47 +50,48 @@ public class TestInboxEndpoints {
   @Autowired
   private MockMvc mockMvc;
 
-  //v1/inbox/{id}
+  @Autowired
+  private UserService userService;
 
-
+  @Autowired
+  private InboxRepository inboxRepository;
 
   @Test
-  @WithMockUser(username="user")
-  @Sql(statements = {
-      "INSERT INTO account (id, username, first_name, last_name, date_of_birth, email, password) VALUES ('c70a38f9-b770-4f2d-8c64-32cc583aac95', 'usernameInbox', 'fistnameInbox', 'lastnameInbox', '1990-01-01', 'inbox@example.com', 'passwordInbox')",
-      "INSERT INTO inbox (receiver_id, message, is_read, id, sent_at) VALUES ('c70a38f9-b770-4f2d-8c64-32cc583aac95', 'Test message', false, 'd24b4a00-22f1-4ef2-a081-2c9b95f76156', now())"
+  @WithMockUser(username="usernameInbox", roles = "USER")
+  @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, statements = {
+      "INSERT INTO account (id, username, first_name, last_name, date_of_birth, email, password) VALUES ('c70a38f9-b770-4f2d-8c64-32cc583aac95', 'usernameInbox', 'firstnameInbox', 'lastnameInbox', '1990-01-01', 'inbox@example.com', '$2a$10$YltQfNKzHoF4Db1oUHtP/eODkthW90lPaouBw6Q1k/7keLcctilpm')",
+      "INSERT INTO inbox (id, receiver_id, message, is_read, sent_at) VALUES ('d24b4a00-22f1-4ef2-a081-2c9b95f76156','c70a38f9-b770-4f2d-8c64-32cc583aac95', 'Test message', false, now())"
   })
+  //v1/inbox/{id}
   public void getMessageById() throws Exception {
-    Account account = new Account();
-    account.setId(UUID.fromString("c70a38f9-b770-4f2d-8c64-32cc583aac95"));
-    account.setUsername("usernameInbox");
-    account.setFirst_name("firstnameInbox");
-    account.setLast_name("lastnameInbox");
-    account.setDate_of_birth(Date.valueOf("1990-01-01"));
-    account.setEmail("inbox@example.com");
-    account.setPassword("passwordInbox");
+    Account account = userService.getAccountOrException(UUID.fromString("c70a38f9-b770-4f2d-8c64-32cc583aac95"));
+    Inbox inbox = inboxRepository.findByIdAndReceiver(UUID.fromString("d24b4a00-22f1-4ef2-a081-2c9b95f76156"), account).orElseThrow();
 
-    /*Inbox inbox = new Inbox();
-    inbox.setReceiver(account);
-    inbox.setMessage("Test message");
-    inbox.setRead(false);
-    inbox.setId(UUID.fromString("d24b4a00-22f1-4ef2-a081-2c9b95f76156"));
+    InboxGetAllResponseDTO expectedResponseBody = new InboxGetAllResponseDTO(
+        inbox.getId(),
+        inbox.getMessage(),
+        inbox.getIsRead(),
+        inbox.getSentAt()
+    );
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper = JsonMapper.builder()
+        .addModule(new JavaTimeModule())
+        .build();
 
-    String expectedJson = objectMapper.writeValueAsString(new InboxGetAllResponseDTO(
-        UUID.fromString("d24b4a00-22f1-4ef2-a081-2c9b95f76156"),
-        "Test message",
-        false,
-
-    ))
-    mockMvc.perform(get("/v1/inbox/d24b4a00-22f1-4ef2-a081-2c9b95f76156"));
+    ResultActions getMessage = mockMvc.perform(MockMvcRequestBuilders.get("/v1/inbox/d24b4a00-22f1-4ef2-a081-2c9b95f76156")
+        .principal(()-> "usernameInbox"));
+    getMessage
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(objectMapper.writeValueAsString(inbox)));
+        .andExpect(content().json(objectMapper.writeValueAsString(expectedResponseBody)));
   }
 
-   */
+  @AfterEach
+  @Sql(statements = {
+      "DELETE FROM inbox WHERE id = 'd24b4a00-22f1-4ef2-a081-2c9b95f76156'",
+      "DELETE FROM account WHERE id = 'c70a38f9-b770-4f2d-8c64-32cc583aac95'"
+  })
+  public void afterTest() {
+  }
 
-}
 }
