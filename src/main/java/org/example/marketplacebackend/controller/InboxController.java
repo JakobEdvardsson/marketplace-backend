@@ -6,17 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
 import org.example.marketplacebackend.repository.InboxRepository;
 import org.example.marketplacebackend.service.UserService;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.comparator.Comparators;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +35,7 @@ public class InboxController {
     this.userService = userService;
   }
 
-  //TODO: POST, DELETE, GET
-/*
+  /*
   @PostMapping("") //TODO: ASK ABOUT LINK FOR INBOX
   public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) {
     Inbox inbox = new Inbox();
@@ -51,15 +49,19 @@ public class InboxController {
     return ResponseEntity.status(HttpStatus.CREATED).body(messageDTO);
 
   }
+   */
 
-  @DeleteMapping("")
-  public ResponseEntity<?> deleteMessage() {
-    String msg = inbox.getMessage();
-    this.inbox.remove(msg);
+  @Transactional
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteMessage(Principal principal, @PathVariable UUID id) {
+    Account authenticatedUser = userService.getAccountOrException(principal.getName());
+    Long deletedRows = inboxRepository.deleteByIdAndReceiver(id, authenticatedUser);
+    if (deletedRows == 0) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
+    return ResponseEntity.ok().build();
   }
-
- */
 
   @GetMapping("")
   public ResponseEntity<?> getMessages(Principal user) {
