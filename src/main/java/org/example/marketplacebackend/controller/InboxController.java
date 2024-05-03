@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
@@ -22,20 +21,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/v1/inbox")
-@CrossOrigin(origins = {"localhost:3000", "localhost:8080"}, allowCredentials = "true")
+@CrossOrigin(origins = { "http://localhost:3000, https://marketplace.johros.dev" }, allowCredentials = "true")
 @RestController
 public class InboxController {
 
-  private final UserService userService;
-  private final InboxRepository inboxRepository;
+    private final UserService userService;
+    private final InboxRepository inboxRepository;
 
-  public InboxController(UserService userService, InboxRepository inboxRepository) {
-    //TODO: ASK IF NEEDED
-    this.inboxRepository = inboxRepository;
-    this.userService = userService;
-  }
+    public InboxController(
+        UserService userService,
+        InboxRepository inboxRepository
+    ) {
+        //TODO: ASK IF NEEDED
+        this.inboxRepository = inboxRepository;
+        this.userService = userService;
+    }
 
-  /*
+    /*
   @PostMapping("") //TODO: ASK ABOUT LINK FOR INBOX
   public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) {
     Inbox inbox = new Inbox();
@@ -51,62 +53,87 @@ public class InboxController {
   }
    */
 
-  @Transactional
-  @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteMessage(Principal principal, @PathVariable UUID id) {
-    Account authenticatedUser = userService.getAccountOrException(principal.getName());
-    Long deletedRows = inboxRepository.deleteByIdAndReceiver(id, authenticatedUser);
-    if (deletedRows == 0) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    @Transactional
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMessage(
+        Principal principal,
+        @PathVariable UUID id
+    ) {
+        Account authenticatedUser = userService.getAccountOrException(
+            principal.getName()
+        );
+        Long deletedRows = inboxRepository.deleteByIdAndReceiver(
+            id,
+            authenticatedUser
+        );
+        if (deletedRows == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.ok().build();
     }
 
-    return ResponseEntity.ok().build();
-  }
+    @GetMapping("")
+    public ResponseEntity<?> getMessages(Principal user) {
+        Account authenticatedUser = userService.getAccountOrException(
+            user.getName()
+        );
 
-  @GetMapping("")
-  public ResponseEntity<?> getMessages(Principal user) {
-    Account authenticatedUser = userService.getAccountOrException(user.getName());
+        List<Inbox> allInbox = inboxRepository.findByReceiver(
+            authenticatedUser
+        );
 
-    List<Inbox> allInbox = inboxRepository.findByReceiver(authenticatedUser);
+        List<InboxGetAllResponseDTO> messages = allInbox
+            .stream()
+            .sorted((Comparator.comparing(Inbox::getSentAt)))
+            .map(
+                inboxEntry ->
+                    new InboxGetAllResponseDTO(
+                        inboxEntry.getId(),
+                        inboxEntry.getMessage(),
+                        inboxEntry.getIsRead(),
+                        inboxEntry.getSentAt()
+                    )
+            )
+            .toList();
 
-    List<InboxGetAllResponseDTO> messages = allInbox
-        .stream()
-        .sorted((Comparator.comparing(Inbox::getSentAt)))
-        .map(inboxEntry -> new InboxGetAllResponseDTO(
-            inboxEntry.getId(), inboxEntry.getMessage(),
-            inboxEntry.getIsRead(), inboxEntry.getSentAt())
-        )
-        .toList();
+        if (messages.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
 
-    if (messages.isEmpty()){
-      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).body(messages);
     }
 
-    return ResponseEntity.status(HttpStatus.OK).body(messages);
-  }
+    //GET - retrieve a specific message in Inbox based on ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getMessageById(
+        Principal user,
+        @PathVariable UUID id
+    ) {
+        Account authenticatedUser = userService.getAccountOrException(
+            user.getName()
+        );
 
-  //GET - retrieve a specific message in Inbox based on ID
-  @GetMapping("/{id}")
-  public ResponseEntity<?> getMessageById(Principal user, @PathVariable UUID id) {
-    Account authenticatedUser = userService.getAccountOrException(user.getName());
+        //Searches for message with ID which also match the receiver
+        Optional<Inbox> inbox = inboxRepository.findByIdAndReceiver(
+            id,
+            authenticatedUser
+        );
+        if (inbox.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-    //Searches for message with ID which also match the receiver
-    Optional<Inbox> inbox = inboxRepository.findByIdAndReceiver(id, authenticatedUser);
-    if (inbox.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Inbox message = inbox.get();
+        InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO(
+            message.getId(),
+            message.getMessage(),
+            message.getIsRead(),
+            message.getSentAt()
+        );
+
+        message.setIsRead(true);
+        inboxRepository.save(message);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
-
-    Inbox message = inbox.get();
-    InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO(
-        message.getId(),
-        message.getMessage(),
-        message.getIsRead(),
-        message.getSentAt()
-    );
-
-    message.setIsRead(true);
-    inboxRepository.save(message);
-
-    return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
-  }
 }
