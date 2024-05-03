@@ -34,7 +34,7 @@ public class AccountsController {
     userModel.setUsername(user.username());
     userModel.setEmail(user.email());
     userModel.setPassword(encodedPassword);
-    userModel.setDateOfBirth(user.date_of_birth());
+    userModel.setDateOfBirth(user.dateOfBirth());
 
     Account userDB = userService.saveUser(userModel);
 
