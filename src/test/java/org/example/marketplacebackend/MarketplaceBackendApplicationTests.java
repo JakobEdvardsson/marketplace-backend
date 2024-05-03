@@ -56,16 +56,16 @@ class MarketplaceBackendApplicationTests {
     Account seller = new Account();
     Account buyer = new Account();
 
-    seller.setFirst_name("Test");
-    seller.setLast_name("Seller");
-    seller.setDate_of_birth(new Date(1993-03-11));
+    seller.setFirstName("Test");
+    seller.setLastName("Seller");
+    seller.setDateOfBirth(new Date(1993 - 03 - 11));
     seller.setEmail("seller@mail.com");
     seller.setPassword("test123");
     seller.setUsername("ffsFILIP");
 
-    buyer.setFirst_name("OliverTest");
-    buyer.setLast_name("BergTest");
-    buyer.setDate_of_birth(new Date(2000-01-03));
+    buyer.setFirstName("OliverTest");
+    buyer.setLastName("BergTest");
+    buyer.setDateOfBirth(new Date(2000 - 01 - 03));
     buyer.setEmail("obbobo@testbuyer.com");
     buyer.setPassword("rorortest");
     buyer.setUsername("oliver");

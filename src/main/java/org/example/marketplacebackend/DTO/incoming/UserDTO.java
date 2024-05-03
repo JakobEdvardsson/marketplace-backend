@@ -10,9 +10,9 @@ import java.sql.Date;
  * @param email
  * @param username
  * @param password
- * @param date_of_birth
+ * @param dateOfBirth
  */
 public record UserDTO(String firstName, String lastName, String email, String username,
-                      String password, Date date_of_birth) {
+                      String password, Date dateOfBirth) {
 
 }

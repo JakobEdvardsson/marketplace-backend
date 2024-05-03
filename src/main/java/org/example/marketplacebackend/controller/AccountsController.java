@@ -7,12 +7,13 @@ import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RequestMapping("v1/accounts")
-@CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
-@RestController
+@CrossOrigin(origins = {"http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
+@Controller
 public class AccountsController {
 
   private final UserService userService;
@@ -29,21 +30,22 @@ public class AccountsController {
     String password = user.password();
     String encodedPassword = passwordEncoder.encode(password);
 
-    userModel.setFirst_name(user.firstName());
-    userModel.setLast_name(user.lastName());
+    userModel.setFirstName(user.firstName());
+    userModel.setLastName(user.lastName());
     userModel.setUsername(user.username());
     userModel.setEmail(user.email());
     userModel.setPassword(encodedPassword);
-    userModel.setDate_of_birth(user.date_of_birth());
+    userModel.setDateOfBirth(user.dateOfBirth());
 
     Account userDB = userService.saveUser(userModel);
 
     UserRegisteredResponseDTO response = new UserRegisteredResponseDTO(
-        userDB.getFirst_name(), userDB.getLast_name(),
-        userDB.getEmail(), userDB.getUsername(), userDB.getDate_of_birth());
+        userDB.getFirstName(), userDB.getLastName(),
+        userDB.getEmail(), userDB.getUsername(), userDB.getDateOfBirth());
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
+
 
   @DeleteMapping("")
   public ResponseEntity<String> deleteUser(Principal principal) {

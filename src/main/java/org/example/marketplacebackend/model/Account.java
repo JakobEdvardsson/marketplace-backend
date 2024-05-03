@@ -20,10 +20,9 @@ public class Account {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private UUID id;
-
-  private String first_name;
-  private String last_name;
-  private Date date_of_birth;
+  private String firstName;
+  private String lastName;
+  private Date dateOfBirth;
   private String email;
   private String password;
   private String username;

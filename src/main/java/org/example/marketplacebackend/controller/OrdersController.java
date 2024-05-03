@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 @RequestMapping("v1/orders")
-@CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = {"localhost:3000", "https://marketplace.johros.dev"}, allowCredentials = "true")
 @RestController
 public class OrdersController {
 

@@ -4,17 +4,20 @@ import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-//@EnableWebSecurity
+@EnableWebSecurity
 //@EnableMethodSecurity
 public class SecurityConfig {
 
@@ -31,9 +34,8 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         //don't require auth for these endpoints
         .requestMatchers(
-            "/auth-not-required",
             "/v1/accounts/login",
-            "/login",
+            "/v1/accounts/logout",
             "/v1/accounts/register",
             "/images/**",
             "/v1/categories",
@@ -44,22 +46,29 @@ public class SecurityConfig {
         .permitAll()
         //require auth to access these endpoints
         .requestMatchers(
-            "/auth-required",
-            "/v1/accounts"
+            "/v1/inbox",
+            "/v1/inbox/*",
+            "/v1/accounts",
+            "/v1/tests/username"
         )
         .hasRole("USER")
     );
 
     http.formLogin(loginForm -> loginForm
-            .loginProcessingUrl("/v1/accounts/login"))
+            .loginProcessingUrl("/v1/accounts/login")
+            .successHandler(new LoginSuccessHandlerImpl())
+            .failureHandler(new LoginFailureHandlerImpl())
+        )
         .logout(logoutConfigurer -> logoutConfigurer
+            .logoutUrl("/v1/accounts/logout")
+            .logoutSuccessHandler(new LogoutSuccessHandlerImpl())
             .deleteCookies("JSESSIONID")
         );
 
-    /* TODO: add this code after adding a login page in frontend
-        http.exceptionHandling(exceptionHandling -> exceptionHandling
+    // return HTTP 401 when a user tries to access an endpoint that they don't have access to,
+    // instead of trying to redirect them to the default login page
+    http.exceptionHandling(exceptionHandling -> exceptionHandling
         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
-     */
 
     return http.build();
   }
@@ -74,7 +83,7 @@ public class SecurityConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost:80, http://localhost:8080, http://127.0.0.1:8080, http://localhost:3000")
+        registry.addMapping("/**").allowedOrigins("http://localhost:3000", "https://marketplace.johros.dev")
             .allowCredentials(true);
       }
     };
