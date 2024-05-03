@@ -13,6 +13,7 @@ import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,15 +22,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("v1/products")
-@CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
-@RestController
+@CrossOrigin(origins = {"http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
+@Controller
 public class ProductsController {
 
   private final CategoryService categoryService;
