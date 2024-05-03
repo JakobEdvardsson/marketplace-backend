@@ -90,21 +90,21 @@ public class InboxController {
 
     //Searches for message with ID which also match the receiver
     Optional<Inbox> inbox = inboxRepository.findByIdAndReceiver(id, authenticatedUser);
-
-    if(inbox.isPresent()){
-      Inbox message = inbox.get();
-      InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO( //TODO kolla senare om det inte funkar
-          message.getId(),
-          message.getMessage(),
-          message.getIsRead(),
-          message.getSentAt()
-      );
-
-      return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
-
-    } else {
-      return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    if (inbox.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-  }
 
+    Inbox message = inbox.get();
+    InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO(
+        message.getId(),
+        message.getMessage(),
+        message.getIsRead(),
+        message.getSentAt()
+    );
+
+    message.setIsRead(true);
+    inboxRepository.save(message);
+
+    return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+  }
 }
