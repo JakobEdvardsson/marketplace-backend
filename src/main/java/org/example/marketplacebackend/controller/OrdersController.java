@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
+import java.time.Instant;
+import java.util.List;
 
 @RequestMapping("v1/orders")
 @CrossOrigin(origins = {"localhost:3000", "https://marketplace.johros.dev"}, allowCredentials = "true")
@@ -36,9 +38,10 @@ public class OrdersController {
 
     ProductOrder order = new ProductOrder();
     order.setBuyer(authenticatedUser);
+    order.setTimeOfPurchase(Instant.now());
 
     ProductOrder productOrder = productOrderService.saveOrder(order);
-    productOrderService.saveOrderItems(orderDTO.orderItemDTOS());
+    productOrderService.saveOrderItems(productOrder, orderDTO.orderItemDTOS());
 
     OrderRegisteredResponseDTO response = new OrderRegisteredResponseDTO(productOrder);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
