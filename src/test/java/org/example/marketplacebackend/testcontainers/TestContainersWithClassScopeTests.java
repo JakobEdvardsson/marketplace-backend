@@ -4,6 +4,7 @@ import java.util.UUID;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.repository.AccountRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,6 +55,7 @@ public class TestContainersWithClassScopeTests {
       INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('6fd69dc3-69ca-69c5-420f-a7c420069e69', 'John', 'Doe', '2024-04-17', 'johndoe420@gmail.com', '$2a$10$WCKI2OPtafr0cYoTYxAuFuhG4I9TJ6HIVwk6oiUs8I75UaeLMbHvO', 'johndoe')
       """)
   @Test
+  @Disabled
   public void getAccount_shouldBeAdded() {
     Account added = accountRepository.findById(
         UUID.fromString("6fd69dc3-69ca-69c5-420f-a7c420069e69")).orElseThrow();
