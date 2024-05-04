@@ -27,5 +27,4 @@ public class OrderItem {
 
   @ManyToOne
   private Product product;
-
 }

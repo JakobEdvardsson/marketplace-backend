@@ -2,7 +2,6 @@ package org.example.marketplacebackend;
 
 import org.example.marketplacebackend.DTO.incoming.OrderDTO;
 import org.example.marketplacebackend.DTO.incoming.OrderItemDTO;
-import org.example.marketplacebackend.model.ProductOrder;
 import org.example.marketplacebackend.service.ProductOrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +58,7 @@ public class TestOrderEndpoints {
 
   @BeforeEach
   public void setup() {
-    // init MockMvc Object and build
+
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
   }
 

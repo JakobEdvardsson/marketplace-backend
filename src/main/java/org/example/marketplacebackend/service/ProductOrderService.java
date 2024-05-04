@@ -25,19 +25,22 @@ public class ProductOrderService {
     this.productService = productService;
   }
 
-  public ProductOrder saveOrder(ProductOrder productOrder) {
+  public ProductOrder save(ProductOrder productOrder) {
     return orderHistoryRepo.save(productOrder);
   }
 
   public List<OrderItem> saveOrderItems(ProductOrder order, List<OrderItemDTO> orderItems) {
     List<OrderItem> orderItemsDb = new ArrayList<>();
 
+    // change product from is_purchased to true
     for (OrderItemDTO orderItemDTO : orderItems) {
       OrderItem orderItem = new OrderItem();
       Product product = productService.getProductOrNull(orderItemDTO.productId());
       orderItem.setProduct(product);
       orderItem.setOrder(order);
-      orderItemsDb.add(orderItemRepo.save(orderItem));
+
+      OrderItem saved = orderItemRepo.save(orderItem);
+      orderItemsDb.add(saved);
     }
 
     return orderItemsDb;

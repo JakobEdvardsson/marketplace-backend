@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -27,6 +26,6 @@ public class ProductOrder {
   @ManyToOne
   private Account buyer;
 
-  @Column(insertable = false)
-  private Instant timeOfPurchase;
+  @Column(insertable = false, updatable = false)
+  private Instant timeOfPurchase = Instant.now();
 }

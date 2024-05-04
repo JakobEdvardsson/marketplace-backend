@@ -1,7 +1,9 @@
 package org.example.marketplacebackend.DTO.outgoing;
 
-import org.example.marketplacebackend.model.ProductOrder;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
-public record OrderRegisteredResponseDTO(ProductOrder order) {
+public record OrderRegisteredResponseDTO(UUID orderId, Instant timeOfPurchase, List<OrderItemRegisteredResponseDTO> orderItems) {
 
 }
