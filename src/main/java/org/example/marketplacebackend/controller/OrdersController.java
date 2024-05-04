@@ -38,7 +38,6 @@ public class OrdersController {
 
     ProductOrder order = new ProductOrder();
     order.setBuyer(authenticatedUser);
-    order.setTimeOfPurchase(Instant.now());
 
     ProductOrder productOrder = productOrderService.saveOrder(order);
     productOrderService.saveOrderItems(productOrder, orderDTO.orderItemDTOS());

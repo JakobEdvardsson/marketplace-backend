@@ -1,5 +1,6 @@
 package org.example.marketplacebackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -25,5 +27,6 @@ public class ProductOrder {
   @ManyToOne
   private Account buyer;
 
+  @Column(insertable = false)
   private Instant timeOfPurchase;
 }
