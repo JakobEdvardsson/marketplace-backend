@@ -41,7 +41,8 @@ public class SecurityConfig {
             "/v1/categories",
             "/v1/products",
             "/v1/products/**",
-            "/v1/watchlist"
+            "/v1/watchlist",
+            "/v1/watchlist/**"
 
         )
         .permitAll()

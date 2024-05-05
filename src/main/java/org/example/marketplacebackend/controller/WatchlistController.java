@@ -1,16 +1,19 @@
 package org.example.marketplacebackend.controller;
 
+import jakarta.transaction.Transactional;
 import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.WatchListResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.model.Watchlist;
+import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.example.marketplacebackend.repository.WatchListRepository;
 import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,10 +32,13 @@ import java.util.UUID;
 public class WatchlistController {
   private final UserService userService;
   private final WatchListRepository watchListRepository;
+  private final ProductCategoryRepository productCategoryRepository;
 
-  public WatchlistController(UserService userService, WatchListRepository watchListRepository) {
+  public WatchlistController(UserService userService, WatchListRepository watchListRepository,
+      ProductCategoryRepository productCategoryRepository) {
     this.userService = userService;
     this.watchListRepository = watchListRepository;
+    this.productCategoryRepository = productCategoryRepository;
   }
 
   @GetMapping("")
@@ -67,5 +73,21 @@ public class WatchlistController {
     WatchListResponseDTO watchListResponseDTO = new WatchListResponseDTO(returnWatchList.getId(), returnWatchList.getProductCategory());
 
     return ResponseEntity.status(HttpStatus.OK).body(watchListResponseDTO);
+  }
+
+  @Transactional
+  @DeleteMapping("/{productCategoryID}")
+  public ResponseEntity<?> deleteWatchListItem(Principal user, @PathVariable UUID productCategoryID) {
+    if (productCategoryID == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+    Account authenticatedUser = userService.getAccountOrException(user.getName());
+
+    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID).orElseThrow();
+
+
+   watchListRepository.deleteBySubscriberAndProductCategory(authenticatedUser, productCategory);
+
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 }
