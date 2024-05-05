@@ -4,6 +4,7 @@ import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.WatchListResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
+import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.model.Watchlist;
 import org.example.marketplacebackend.repository.WatchListRepository;
 import org.example.marketplacebackend.service.UserService;
@@ -12,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.List;
@@ -44,5 +48,24 @@ public class WatchlistController {
     List<WatchListResponseDTO> allWatchLists = watchList.stream().map(list -> new WatchListResponseDTO(list.getId(), list.getProductCategory())).toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(allWatchLists);
+  }
+
+  @PostMapping("")
+  public ResponseEntity<?> postWatchListItem(Principal user, @RequestBody ProductCategory productCategory) {
+
+    if (productCategory == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    Account authenticatedUser = userService.getAccountOrException(user.getName());
+
+    Watchlist watchList = new Watchlist();
+    watchList.setSubscriber(authenticatedUser);
+    watchList.setProductCategory(productCategory);
+
+    Watchlist returnWatchList = watchListRepository.save(watchList);
+    WatchListResponseDTO watchListResponseDTO = new WatchListResponseDTO(returnWatchList.getId(), returnWatchList.getProductCategory());
+
+    return ResponseEntity.status(HttpStatus.OK).body(watchListResponseDTO);
   }
 }
