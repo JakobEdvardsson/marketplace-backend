@@ -37,7 +37,7 @@ create table product_category
         constraint product_category_pk
             primary key,
     name varchar                        not null
-        constraint unique_product_type_name
+        constraint unique_product_category_name
             unique
 );
 
@@ -48,7 +48,7 @@ create table product
             primary key,
     name             varchar                                            not null,
     product_category uuid                                               not null
-        constraint product_type_id_fk
+        constraint product_category_id_fk
             references product_category,
     price            integer                                            not null,
     condition        integer                                            not null
@@ -130,8 +130,8 @@ create index product_order_buyer_id_index
 
 create table watchlist
 (
-    product_type_id uuid                           not null
-        constraint watchlist_product_type_id_fk
+    product_category_id uuid                           not null
+        constraint watchlist_product_category_id_fk
             references product_category,
     subscriber_id   uuid                           not null
         constraint watchlist_account_id_fk
@@ -141,8 +141,8 @@ create table watchlist
             primary key
 );
 
-create index watchlist_product_type_id_index
-    on watchlist (product_type_id);
+create index watchlist_product_category_id_index
+    on watchlist (product_category_id);
 
 create index watchlist_subscriber_id_index
     on watchlist (subscriber_id);
