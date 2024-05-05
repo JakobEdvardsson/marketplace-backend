@@ -32,7 +32,7 @@ public class WatchlistController {
   }
 
   @GetMapping("")
-  public ResponseEntity<?> getMessageById(Principal user) {
+  public ResponseEntity<?> getWatchList(Principal user) {
     Account authenticatedUser = userService.getAccountOrException(user.getName());
 
     List<Watchlist> watchList = watchListRepository.findAllBySubscriber(authenticatedUser);
