@@ -1,11 +1,12 @@
 package org.example.marketplacebackend.controller;
 
 import jakarta.transaction.Transactional;
+import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
 import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
-import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.WatchListResponseDTO;
 import org.example.marketplacebackend.model.Account;
-import org.example.marketplacebackend.model.Inbox;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.model.Watchlist;
 import org.example.marketplacebackend.repository.ProductCategoryRepository;
@@ -20,17 +21,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequestMapping("/v1/watchlist")
-@CrossOrigin(origins = { "http://localhost:3000, https://marketplace.johros.dev" }, allowCredentials = "true")
+@CrossOrigin(origins = {
+    "http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
 @RestController
 public class WatchlistController {
+
   private final UserService userService;
   private final WatchListRepository watchListRepository;
   private final ProductCategoryRepository productCategoryRepository;
@@ -48,15 +46,17 @@ public class WatchlistController {
 
     List<Watchlist> watchList = watchListRepository.findAllBySubscriber(authenticatedUser);
 
-    List<WatchListResponseDTO> allWatchLists = watchList.stream().map(list -> new WatchListResponseDTO(list.getId(), list.getProductCategory())).toList();
+    List<WatchListResponseDTO> allWatchLists = watchList.stream()
+        .map(list -> new WatchListResponseDTO(list.getId(), list.getProductCategory())).toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(allWatchLists);
   }
 
   @PostMapping("")
-  public ResponseEntity<?> postWatchListItem(Principal user, @RequestBody ProductCategoryDTO productCategoryDTO) {
+  public ResponseEntity<?> postWatchListItem(Principal user,
+      @RequestBody ProductCategoryDTO productCategoryDTO) {
 
-    if (productCategoryDTO == null || productCategoryDTO.id() == null){
+    if (productCategoryDTO == null || productCategoryDTO.id() == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
@@ -65,10 +65,10 @@ public class WatchlistController {
     }
 
     Account authenticatedUser = userService.getAccountOrException(user.getName());
-    if (watchListRepository.existsBySubscriberAndProductCategoryId(authenticatedUser, productCategoryDTO.id())) {
+    if (watchListRepository.existsBySubscriberAndProductCategoryId(authenticatedUser,
+        productCategoryDTO.id())) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-
 
     Watchlist watchList = new Watchlist();
     watchList.setSubscriber(authenticatedUser);
@@ -79,25 +79,29 @@ public class WatchlistController {
     watchList.setProductCategory(productCategory);
 
     Watchlist returnWatchList = watchListRepository.save(watchList);
-    WatchListResponseDTO watchListResponseDTO = new WatchListResponseDTO(returnWatchList.getId(), returnWatchList.getProductCategory());
+    WatchListResponseDTO watchListResponseDTO = new WatchListResponseDTO(returnWatchList.getId(),
+        returnWatchList.getProductCategory());
 
     return ResponseEntity.status(HttpStatus.OK).body(watchListResponseDTO);
   }
 
   @Transactional
   @DeleteMapping("/{productCategoryID}")
-  public ResponseEntity<?> deleteWatchListItem(Principal user, @PathVariable UUID productCategoryID) {
+  public ResponseEntity<?> deleteWatchListItem(Principal user,
+      @PathVariable UUID productCategoryID) {
     if (productCategoryID == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
     Account authenticatedUser = userService.getAccountOrException(user.getName());
 
-    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID).orElse(null);
+    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID)
+        .orElse(null);
     if (productCategory == null) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    if (watchListRepository.deleteBySubscriberAndProductCategory(authenticatedUser, productCategory) < 1) {
+    if (watchListRepository.deleteBySubscriberAndProductCategory(authenticatedUser, productCategory)
+        < 1) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 

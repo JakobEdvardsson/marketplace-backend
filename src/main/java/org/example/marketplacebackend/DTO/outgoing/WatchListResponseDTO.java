@@ -1,6 +1,8 @@
 package org.example.marketplacebackend.DTO.outgoing;
 
-import org.example.marketplacebackend.model.ProductCategory;
 import java.util.UUID;
+import org.example.marketplacebackend.model.ProductCategory;
 
-public record WatchListResponseDTO(UUID id, ProductCategory productCategory) {}
+public record WatchListResponseDTO(UUID id, ProductCategory productCategory) {
+
+}

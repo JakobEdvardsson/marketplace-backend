@@ -1,17 +1,14 @@
 package org.example.marketplacebackend;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.marketplacebackend.model.Account;
+import java.util.UUID;
 import org.example.marketplacebackend.model.ProductCategory;
-import org.example.marketplacebackend.model.Watchlist;
 import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.example.marketplacebackend.repository.WatchListRepository;
-import org.example.marketplacebackend.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +26,23 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import java.util.UUID;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
 class TestWatchlistController {
+
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
       "postgres:16-alpine"
   )
       .withInitScript("schema.sql");
+  @Autowired
+  private MockMvc mockMvc;
+  @Autowired
+  private WatchListRepository watchListRepository;
+  @Autowired
+  private ProductCategoryRepository productCategoryRepository;
 
   @DynamicPropertySource
   private static void configureProperties(DynamicPropertyRegistry registry) {
@@ -47,16 +50,6 @@ class TestWatchlistController {
     registry.add("spring.datasource.username", DB::getUsername);
     registry.add("spring.datasource.password", DB::getPassword);
   }
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private WatchListRepository watchListRepository;
-
-  @Autowired
-  private ProductCategoryRepository productCategoryRepository;
-
 
   //#################
   //GET v1/watchlist#
@@ -76,7 +69,7 @@ class TestWatchlistController {
   public void getWatchlist() throws Exception {
 
     ResultActions getWatchlist = mockMvc.perform(MockMvcRequestBuilders.get("/v1/watchlist")
-        .principal(()-> "usernameInbox"));
+        .principal(() -> "usernameInbox"));
 
     getWatchlist.andExpect(status().isOk());
   }
@@ -97,24 +90,25 @@ class TestWatchlistController {
   @WithMockUser(username = "usernameInbox", roles = "USER")
   public void postWatchListItem() throws Exception {
 
-    ProductCategory productCategory = productCategoryRepository.findById(UUID.fromString("fdeb0281-1481-45f9-b005-e02bba579085")).orElseThrow();
+    ProductCategory productCategory = productCategoryRepository.findById(
+        UUID.fromString("fdeb0281-1481-45f9-b005-e02bba579085")).orElseThrow();
 
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(productCategory);
 
     ResultActions resultActions = mockMvc.perform(post("/v1/watchlist")
-        .principal(()-> "usernameInbox")
+        .principal(() -> "usernameInbox")
         .contentType(MediaType.APPLICATION_JSON)
         .content(json));
 
     resultActions.andExpect(status().isOk());
 
-     resultActions = mockMvc.perform(post("/v1/watchlist")
-        .principal(()-> "usernameInbox")
+    resultActions = mockMvc.perform(post("/v1/watchlist")
+        .principal(() -> "usernameInbox")
         .contentType(MediaType.APPLICATION_JSON)
         .content(json));
 
-     resultActions.andExpect(status().isBadRequest());
+    resultActions.andExpect(status().isBadRequest());
   }
 
   //####################
@@ -133,11 +127,14 @@ class TestWatchlistController {
   @WithMockUser(username = "usernameInbox", roles = "USER")
   public void deleteWatchListItem() throws Exception {
 
-    ResultActions resultActions = mockMvc.perform(delete("/v1/watchlist/fdeb0281-1481-45f9-b005-e02bba579085")
-        .principal(()-> "usernameInbox")
-        .contentType(MediaType.APPLICATION_JSON));
+    ResultActions resultActions = mockMvc.perform(
+        delete("/v1/watchlist/fdeb0281-1481-45f9-b005-e02bba579085")
+            .principal(() -> "usernameInbox")
+            .contentType(MediaType.APPLICATION_JSON));
 
     resultActions.andExpect(status().isOk());
-    Assertions.assertTrue(watchListRepository.findById(UUID.fromString("9ecff608-a7d9-4ff8-871d-3bf632ddef6d")).isEmpty());
+    Assertions.assertTrue(
+        watchListRepository.findById(UUID.fromString("9ecff608-a7d9-4ff8-871d-3bf632ddef6d"))
+            .isEmpty());
   }
 }
