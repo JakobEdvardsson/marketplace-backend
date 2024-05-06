@@ -56,11 +56,19 @@ public class WatchlistController {
   @PostMapping("")
   public ResponseEntity<?> postWatchListItem(Principal user, @RequestBody ProductCategoryDTO productCategoryDTO) {
 
-    if (productCategoryDTO == null) {
+    if (productCategoryDTO == null || productCategoryDTO.id() == null){
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    if (!productCategoryRepository.existsById(productCategoryDTO.id())) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     Account authenticatedUser = userService.getAccountOrException(user.getName());
+    if (watchListRepository.existsBySubscriberAndProductCategoryId(authenticatedUser, productCategoryDTO.id())) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
 
     Watchlist watchList = new Watchlist();
     watchList.setSubscriber(authenticatedUser);

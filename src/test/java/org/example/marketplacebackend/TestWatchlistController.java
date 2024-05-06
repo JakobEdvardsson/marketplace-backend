@@ -108,6 +108,13 @@ class TestWatchlistController {
         .content(json));
 
     resultActions.andExpect(status().isOk());
+
+     resultActions = mockMvc.perform(post("/v1/watchlist")
+        .principal(()-> "usernameInbox")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json));
+
+     resultActions.andExpect(status().isBadRequest());
   }
 
   //####################
