@@ -48,10 +48,6 @@ public class WatchlistController {
 
     List<Watchlist> watchList = watchListRepository.findAllBySubscriber(authenticatedUser);
 
-    if (watchList.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-
     List<WatchListResponseDTO> allWatchLists = watchList.stream().map(list -> new WatchListResponseDTO(list.getId(), list.getProductCategory())).toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(allWatchLists);
