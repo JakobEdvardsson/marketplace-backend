@@ -1,6 +1,7 @@
 package org.example.marketplacebackend.controller;
 
 import jakarta.transaction.Transactional;
+import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
 import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.WatchListResponseDTO;
 import org.example.marketplacebackend.model.Account;
@@ -57,9 +58,9 @@ public class WatchlistController {
   }
 
   @PostMapping("")
-  public ResponseEntity<?> postWatchListItem(Principal user, @RequestBody ProductCategory productCategory) {
+  public ResponseEntity<?> postWatchListItem(Principal user, @RequestBody ProductCategoryDTO productCategoryDTO) {
 
-    if (productCategory == null) {
+    if (productCategoryDTO == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
@@ -67,6 +68,10 @@ public class WatchlistController {
 
     Watchlist watchList = new Watchlist();
     watchList.setSubscriber(authenticatedUser);
+
+    ProductCategory productCategory = new ProductCategory();
+    productCategory.setId(productCategoryDTO.id());
+    productCategory.setName(productCategoryDTO.name());
     watchList.setProductCategory(productCategory);
 
     Watchlist returnWatchList = watchListRepository.save(watchList);
