@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public interface WatchListRepository extends JpaRepository<Watchlist, UUID> {
   List<Watchlist> findAllBySubscriber(Account subscriber);
-  void deleteBySubscriberAndProductCategory(Account subscriber, ProductCategory productCategoryID);
+  long deleteBySubscriberAndProductCategory(Account subscriber, ProductCategory productCategoryID);
   boolean existsBySubscriberAndProductCategoryId(Account subscriber, UUID productCategoryID);
 }

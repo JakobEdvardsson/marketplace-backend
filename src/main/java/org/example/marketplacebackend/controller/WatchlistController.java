@@ -92,10 +92,14 @@ public class WatchlistController {
     }
     Account authenticatedUser = userService.getAccountOrException(user.getName());
 
-    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID).orElseThrow();
+    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID).orElse(null);
+    if (productCategory == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
-
-   watchListRepository.deleteBySubscriberAndProductCategory(authenticatedUser, productCategory);
+    if (watchListRepository.deleteBySubscriberAndProductCategory(authenticatedUser, productCategory) < 1) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 
     return ResponseEntity.status(HttpStatus.OK).build();
   }
