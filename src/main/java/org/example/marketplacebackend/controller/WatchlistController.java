@@ -47,7 +47,7 @@ public class WatchlistController {
     List<Watchlist> watchList = watchListRepository.findAllBySubscriber(authenticatedUser);
 
     List<WatchListResponseDTO> allWatchLists = watchList.stream()
-        .map(list -> new WatchListResponseDTO(list.getId(), list.getProductCategory())).toList();
+        .map(list -> new WatchListResponseDTO(list.getId(), new ProductCategoryDTO(list.getProductCategory().getId(), list.getProductCategory().getName()))).toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(allWatchLists);
   }
@@ -80,7 +80,8 @@ public class WatchlistController {
 
     Watchlist returnWatchList = watchListRepository.save(watchList);
     WatchListResponseDTO watchListResponseDTO = new WatchListResponseDTO(returnWatchList.getId(),
-        returnWatchList.getProductCategory());
+        new ProductCategoryDTO(returnWatchList.getProductCategory().getId(),
+            returnWatchList.getProductCategory().getName()));
 
     return ResponseEntity.status(HttpStatus.OK).body(watchListResponseDTO);
   }
