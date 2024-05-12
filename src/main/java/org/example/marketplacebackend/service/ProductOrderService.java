@@ -53,4 +53,16 @@ public class ProductOrderService {
   public ProductOrder getOrderOrNull(UUID orderId) {
     return orderHistoryRepo.findById(orderId).orElse(null);
   }
+
+  public List<ProductOrder> getAllOrders(UUID buyerId) {
+    return orderHistoryRepo.findAllByBuyer_Id(buyerId).orElse(null);
+  }
+
+  public List<OrderItem> getAllOrderItemsByOrderId(UUID orderId) {
+    return orderItemRepo.findAllByOrder_Id(orderId).orElse(null);
+  }
+
+  public ProductOrder getProductOrderByBuyer_IdAndId(UUID buyerId, UUID id) {
+    return orderHistoryRepo.getProductOrderByBuyer_IdAndId(buyerId, id).orElse(null);
+  }
 }

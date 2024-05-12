@@ -1,4 +1,4 @@
-package org.example.marketplacebackend.DTO.outgoing;
+package org.example.marketplacebackend.DTO.outgoing.orderDTOs;
 
 import java.util.UUID;
 
