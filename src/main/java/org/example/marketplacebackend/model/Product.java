@@ -1,5 +1,7 @@
 package org.example.marketplacebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,8 +32,9 @@ public class Product {
 
   private String name;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_category")
+  @JsonBackReference
   private ProductCategory productCategory;
 
   private Integer price;
@@ -42,12 +45,14 @@ public class Product {
 
   private String description;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seller")
+  @JsonBackReference
   private Account seller;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "buyer")
+  @JsonBackReference
   private Account buyer;
 
   private Integer color;
@@ -58,5 +63,6 @@ public class Product {
   private Instant createdAt;
 
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+  @JsonManagedReference
   private List<ProductImage> productImages;
 }

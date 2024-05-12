@@ -70,7 +70,8 @@ public class ProductService {
   }
 
   public List<Product> findTop20ByOrderByCreatedAtDesc() {
-    return productRepo.findTop20ByOrderByCreatedAtDesc();
+    List<UUID> productIds = productRepo.findTop20ProductIds();
+    return productRepo.findByIdIn(productIds);
   }
 
   /**
