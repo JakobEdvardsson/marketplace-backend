@@ -162,6 +162,7 @@ public class TestOrderEndpoints {
     response
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
   }
 
   @Test
@@ -227,12 +228,13 @@ public class TestOrderEndpoints {
           DELETE FROM account WHERE id = '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee';
           """)
   public void getOrderFail() throws Exception {
+    String endPoint = "/v1/orders/" + UUID.randomUUID();
     ResultActions response = mockMvc.perform(get(
-        "/v1/orders/bullshit")
+        endPoint)
         .principal(() -> "ken")
         .contentType(MediaType.APPLICATION_JSON)
     );
 
-    response.andExpect(status().isBadRequest());
+    response.andExpect(status().isNotFound());
   }
 }

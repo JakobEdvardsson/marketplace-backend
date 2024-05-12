@@ -111,7 +111,6 @@ public class OrdersController {
 
     ProductOrder order = productOrderService.getProductOrderByBuyer_IdAndId(
         authenticatedUser.getId(), id);
-    System.out.println(order);
 
     if (order == null) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

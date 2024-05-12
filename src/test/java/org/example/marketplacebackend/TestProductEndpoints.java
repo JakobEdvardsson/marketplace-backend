@@ -221,11 +221,11 @@ public class TestProductEndpoints {
   @Test
   @WithMockUser
   public void getProductByIdFail() throws Exception {
-    String id = "798bdcaf";
+    UUID id = UUID.randomUUID();
     String endPoint = "/v1/products/" + id;
 
     ResultActions getProducts = mockMvc.perform(get(endPoint));
-    getProducts.andExpect(status().isBadRequest());
+    getProducts.andExpect(status().isNotFound());
   }
 
   @AfterEach

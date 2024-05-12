@@ -119,9 +119,9 @@ public class ProductsController {
     Product product = productService.findProductByIdAndSeller(id,
         authenticatedUser);
 
-    // if (product == null) {
-    //   return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    // }
+    if (product == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
     // If there are images we need to delete them first
     if (product.getProductImages() != null) {
