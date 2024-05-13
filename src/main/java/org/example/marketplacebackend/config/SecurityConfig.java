@@ -94,6 +94,7 @@ public class SecurityConfig {
     withCreds.setAllowedOrigins(List.of("http://localhost:3000","https://marketplace.johros.dev"));
     withCreds.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     withCreds.setAllowCredentials(true);
+    withCreds.setAllowedHeaders(List.of("Content-Type"));
 
     UrlBasedCorsConfigurationSource config = new UrlBasedCorsConfigurationSource();
     config.registerCorsConfiguration("/**", withCreds);
