@@ -21,21 +21,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/v1/inbox")
-@CrossOrigin(origins = { "http://localhost:3000, https://marketplace.johros.dev" }, allowCredentials = "true")
+@CrossOrigin(origins = {
+    "http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
 @RestController
 public class InboxController {
 
-    private final UserService userService;
-    private final InboxRepository inboxRepository;
+  private final UserService userService;
+  private final InboxRepository inboxRepository;
 
-    public InboxController(
-        UserService userService,
-        InboxRepository inboxRepository
-    ) {
-        //TODO: ASK IF NEEDED
-        this.inboxRepository = inboxRepository;
-        this.userService = userService;
-    }
+  public InboxController(
+      UserService userService,
+      InboxRepository inboxRepository
+  ) {
+    //TODO: ASK IF NEEDED
+    this.inboxRepository = inboxRepository;
+    this.userService = userService;
+  }
 
     /*
   @PostMapping("") //TODO: ASK ABOUT LINK FOR INBOX
@@ -53,87 +54,87 @@ public class InboxController {
   }
    */
 
-    @Transactional
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMessage(
-        Principal principal,
-        @PathVariable UUID id
-    ) {
-        Account authenticatedUser = userService.getAccountOrException(
-            principal.getName()
-        );
-        Long deletedRows = inboxRepository.deleteByIdAndReceiver(
-            id,
-            authenticatedUser
-        );
-        if (deletedRows == 0) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        return ResponseEntity.ok().build();
+  @Transactional
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteMessage(
+      Principal principal,
+      @PathVariable UUID id
+  ) {
+    Account authenticatedUser = userService.getAccountOrException(
+        principal.getName()
+    );
+    Long deletedRows = inboxRepository.deleteByIdAndReceiver(
+        id,
+        authenticatedUser
+    );
+    if (deletedRows == 0) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getMessages(Principal user) {
-        Account authenticatedUser = userService.getAccountOrException(
-            user.getName()
-        );
+    return ResponseEntity.ok().build();
+  }
 
-        List<Inbox> allInbox = inboxRepository.findByReceiver(
-            authenticatedUser
-        );
+  @GetMapping("")
+  public ResponseEntity<?> getMessages(Principal user) {
+    Account authenticatedUser = userService.getAccountOrException(
+        user.getName()
+    );
 
-        List<InboxGetAllResponseDTO> messages = allInbox
-            .stream()
-            .sorted((Comparator.comparing(Inbox::getSentAt)))
-            .map(
-                inboxEntry ->
-                    new InboxGetAllResponseDTO(
-                        inboxEntry.getId(),
-                        inboxEntry.getMessage(),
-                        inboxEntry.getIsRead(),
-                        inboxEntry.getSentAt()
-                    )
-            )
-            .toList();
+    List<Inbox> allInbox = inboxRepository.findByReceiver(
+        authenticatedUser
+    );
 
-        if (messages.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
+    List<InboxGetAllResponseDTO> messages = allInbox
+        .stream()
+        .sorted((Comparator.comparing(Inbox::getSentAt)))
+        .map(
+            inboxEntry ->
+                new InboxGetAllResponseDTO(
+                    inboxEntry.getId(),
+                    inboxEntry.getMessage(),
+                    inboxEntry.getIsRead(),
+                    inboxEntry.getSentAt()
+                )
+        )
+        .toList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(messages);
+    if (messages.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    //GET - retrieve a specific message in Inbox based on ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getMessageById(
-        Principal user,
-        @PathVariable UUID id
-    ) {
-        Account authenticatedUser = userService.getAccountOrException(
-            user.getName()
-        );
+    return ResponseEntity.status(HttpStatus.OK).body(messages);
+  }
 
-        //Searches for message with ID which also match the receiver
-        Optional<Inbox> inbox = inboxRepository.findByIdAndReceiver(
-            id,
-            authenticatedUser
-        );
-        if (inbox.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+  //GET - retrieve a specific message in Inbox based on ID
+  @GetMapping("/{id}")
+  public ResponseEntity<?> getMessageById(
+      Principal user,
+      @PathVariable UUID id
+  ) {
+    Account authenticatedUser = userService.getAccountOrException(
+        user.getName()
+    );
 
-        Inbox message = inbox.get();
-        InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO(
-            message.getId(),
-            message.getMessage(),
-            message.getIsRead(),
-            message.getSentAt()
-        );
-
-        message.setIsRead(true);
-        inboxRepository.save(message);
-
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    //Searches for message with ID which also match the receiver
+    Optional<Inbox> inbox = inboxRepository.findByIdAndReceiver(
+        id,
+        authenticatedUser
+    );
+    if (inbox.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+    Inbox message = inbox.get();
+    InboxGetAllResponseDTO responseDTO = new InboxGetAllResponseDTO(
+        message.getId(),
+        message.getMessage(),
+        message.getIsRead(),
+        message.getSentAt()
+    );
+
+    message.setIsRead(true);
+    inboxRepository.save(message);
+
+    return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+  }
 }

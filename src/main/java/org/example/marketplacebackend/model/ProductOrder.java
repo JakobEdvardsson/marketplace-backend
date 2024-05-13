@@ -1,5 +1,6 @@
 package org.example.marketplacebackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,5 +26,6 @@ public class ProductOrder {
   @ManyToOne
   private Account buyer;
 
-  private Instant timeOfPurchase;
+  @Column(insertable = false, updatable = false)
+  private Instant timeOfPurchase = Instant.now();
 }
