@@ -1,6 +1,5 @@
 package org.example.marketplacebackend.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +16,7 @@ import java.util.UUID;
 
 @Getter @Setter @NoArgsConstructor @EqualsAndHashCode @ToString
 @Entity
-@Table(name = "product_image")
+@Table(name = "productImage")
 public class ProductImage {
 
   @Id
@@ -25,7 +24,7 @@ public class ProductImage {
   private UUID id;
 
   @ManyToOne
-  @JsonBackReference
+  @JsonIgnore
   private Product product;
 
   private String imageUrl;

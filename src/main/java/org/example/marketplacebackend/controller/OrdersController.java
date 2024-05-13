@@ -57,8 +57,7 @@ public class OrdersController {
 
     ProductOrder productOrder = productOrderService.save(dbInsertOrder);
 
-    List<OrderItemRegisteredResponseDTO> orderItemsDTO = productOrderService.saveOrderItems(
-        authenticatedUser, productOrder,
+    List<OrderItemRegisteredResponseDTO> orderItemsDTO = productOrderService.saveOrderItems(authenticatedUser, productOrder,
         orderDTO.orderItemDTOS());
 
     OrderRegisteredResponseDTO response = new OrderRegisteredResponseDTO(
@@ -81,9 +80,10 @@ public class OrdersController {
     }
 
     List<OrderRegisteredResponseDTO> ordersDTO = new ArrayList<>();
-    // select
+
     for (ProductOrder productOrder : orders) {
-      List<OrderItem> orderItems = productOrder.getOrderItems();
+      List<OrderItem> orderItems = productOrderService.getAllOrderItemsByOrderId(
+          productOrder.getId());
       List<OrderItemRegisteredResponseDTO> orderItemsDTO = new ArrayList<>();
 
       for (OrderItem orderItem : orderItems) {
@@ -106,8 +106,7 @@ public class OrdersController {
   }
 
   @PatchMapping("/{productId}")
-  public ResponseEntity<?> setOrderStatus(Principal principal, @PathVariable UUID productId,
-      @RequestBody
+  public ResponseEntity<?> setOrderStatus(Principal principal, @PathVariable UUID productId, @RequestBody
       StatusDTO statusDTO) {
     String username = principal.getName();
 
@@ -118,21 +117,14 @@ public class OrdersController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    if (product.getBuyer() == null || product.getStatus() != ProductStatus.PENDING.ordinal()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
     if (statusDTO.accept()) {
       product.setStatus(ProductStatus.SOLD.ordinal());
-      productService.saveProduct(product);
       OrderStatusResponseDTO response = new OrderStatusResponseDTO(ProductStatus.SOLD.ordinal());
       return ResponseEntity.status(HttpStatus.OK).body(response);
 
     } else {
       product.setStatus(ProductStatus.AVAILABLE.ordinal());
-      productService.saveProduct(product);
-      OrderStatusResponseDTO response = new OrderStatusResponseDTO(
-          ProductStatus.AVAILABLE.ordinal());
+      OrderStatusResponseDTO response = new OrderStatusResponseDTO(ProductStatus.AVAILABLE.ordinal());
       return ResponseEntity.status(HttpStatus.OK).body(response);
     }
   }
@@ -150,7 +142,7 @@ public class OrdersController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    List<OrderItem> orderItems = order.getOrderItems();
+    List<OrderItem> orderItems = productOrderService.getAllOrderItemsByOrderId(id);
 
     List<OrderItemRegisteredResponseDTO> orderItemsDTO = new ArrayList<>();
     for (OrderItem item : orderItems) {

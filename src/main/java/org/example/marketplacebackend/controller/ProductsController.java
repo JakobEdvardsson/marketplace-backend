@@ -160,6 +160,10 @@ public class ProductsController {
 
     List<Product> activeListings = productService.getActiveListings(authenticatedUser);
 
+    if (activeListings.isEmpty()) {
+      return ResponseEntity.ok().body(new ArrayList<>());
+    }
+
     ActiveListingsDTO listings = new ActiveListingsDTO(activeListings
         .stream()
         .map(product -> new ActiveListingDTO(
@@ -180,7 +184,7 @@ public class ProductsController {
         .toList()
     );
 
-    return ResponseEntity.status(HttpStatus.OK).body(listings);
+    return ResponseEntity.ok().body(listings);
   }
 
   @GetMapping("/my-sold-products")
