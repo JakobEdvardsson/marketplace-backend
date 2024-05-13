@@ -38,7 +38,7 @@ public class Product {
 
   private Integer condition;
 
-  private Boolean isPurchased;
+  private Integer status;
 
   private String description;
 

@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class TestProductCategoryEndpoints {
+public class ProductCategoryEndpointsTests {
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
       "postgres:16-alpine"

@@ -1,12 +1,18 @@
 package org.example.marketplacebackend.controller;
 
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
-import org.example.marketplacebackend.DTO.outgoing.ProductGetResponseDTO;
-import org.example.marketplacebackend.DTO.outgoing.ProductRegisteredResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.ProfileResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ActiveListingDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ActiveListingsDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.GetAllSoldProductsResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.GetSoldProductResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.model.ProductCategory;
+import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.service.CategoryService;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
@@ -24,11 +30,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("v1/products")
-@CrossOrigin(origins = {"http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
+@CrossOrigin(origins = {
+    "http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
 @Controller
 public class ProductsController {
 
@@ -63,7 +71,7 @@ public class ProductsController {
 
     productModel.setPrice(product.price());
     productModel.setCondition(product.condition());
-    productModel.setIsPurchased(false);
+    productModel.setStatus(ProductStatus.AVAILABLE.ordinal());
     productModel.setDescription(product.description());
     productModel.setSeller(authenticatedUser);
     productModel.setColor(product.color());
@@ -143,6 +151,59 @@ public class ProductsController {
     }
 
     ProductGetResponseDTO response = new ProductGetResponseDTO(product);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  @GetMapping("/my-active-listings")
+  public ResponseEntity<?> getMyListings(Principal principal) {
+    Account authenticatedUser = userService.getAccountOrException(principal.getName());
+
+    List<Product> activeListings = productService.getActiveListings(authenticatedUser);
+
+    if (activeListings.isEmpty()) {
+      return ResponseEntity.ok().body(new ArrayList<>());
+    }
+
+    ActiveListingsDTO listings = new ActiveListingsDTO(activeListings
+        .stream()
+        .map(product -> new ActiveListingDTO(
+                product.getId(),
+                product.getName(),
+                product.getProductCategory().getName(),
+                product.getPrice(),
+                product.getStatus(),
+                product.getCreatedAt(),
+                product.getBuyer() != null ?
+                    new ProfileResponseDTO(
+                        product.getBuyer().getFirstName(),
+                        product.getBuyer().getLastName(),
+                        product.getBuyer().getUsername())
+                    : null
+            )
+        )
+        .toList()
+    );
+
+    return ResponseEntity.ok().body(listings);
+  }
+
+  @GetMapping("/my-sold-products")
+  public ResponseEntity<?> getAllSoldProducts(Principal principal) {
+    String username = principal.getName();
+
+    Account authenticatedUser = userService.getAccountOrException(username);
+    List<Product> products = productService.getSoldProducts(authenticatedUser);
+
+    List<GetSoldProductResponseDTO> soldProducts = new ArrayList<>();
+    for (Product product : products) {
+      GetSoldProductResponseDTO soldProduct = new GetSoldProductResponseDTO(
+          product.getId(), product.getName(), product.getProductCategory().getName(),
+          product.getPrice(), product.getBuyer().getId(), product.getCreatedAt()
+      );
+      soldProducts.add(soldProduct);
+    }
+    GetAllSoldProductsResponseDTO response = new GetAllSoldProductsResponseDTO(soldProducts);
+
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }
