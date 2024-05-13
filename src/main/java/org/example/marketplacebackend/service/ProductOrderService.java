@@ -2,6 +2,7 @@ package org.example.marketplacebackend.service;
 
 import jakarta.annotation.Nullable;
 import org.example.marketplacebackend.DTO.incoming.OrderItemDTO;
+import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.OrderItem;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductOrder;
@@ -30,7 +31,7 @@ public class ProductOrderService {
     return orderHistoryRepo.save(productOrder);
   }
 
-  public List<OrderItem> saveOrderItems(ProductOrder order, List<OrderItemDTO> orderItems) {
+  public List<OrderItem> saveOrderItems(Account authenticatedUser, ProductOrder order, List<OrderItemDTO> orderItems) {
     List<OrderItem> orderItemsDb = new ArrayList<>();
 
     for (OrderItemDTO orderItemDTO : orderItems) {
@@ -38,18 +39,20 @@ public class ProductOrderService {
 
       Product product = productService.getProductOrNull(orderItemDTO.productId());
 
-      if (product != null && !product.getIsPurchased()) {
-        product.setIsPurchased(true);
-        productService.saveProduct(product);
-
-        orderItem.setProduct(product);
-        orderItem.setOrder(order);
-
-        OrderItem saved = orderItemRepo.save(orderItem);
-        orderItemsDb.add(saved);
+      if (product == null || product.getIsPurchased()) {
+        continue;
       }
-    }
 
+      product.setIsPurchased(true);
+      product.setBuyer(authenticatedUser);
+      productService.saveProduct(product);
+
+      orderItem.setProduct(product);
+      orderItem.setOrder(order);
+
+      OrderItem saved = orderItemRepo.save(orderItem);
+      orderItemsDb.add(saved);
+    }
     return orderItemsDb;
   }
 

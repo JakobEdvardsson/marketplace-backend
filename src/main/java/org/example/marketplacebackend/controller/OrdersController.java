@@ -49,7 +49,7 @@ public class OrdersController {
 
     ProductOrder productOrder = productOrderService.save(dbInsertOrder);
 
-    List<OrderItem> orderItems = productOrderService.saveOrderItems(productOrder,
+    List<OrderItem> orderItems = productOrderService.saveOrderItems(authenticatedUser, productOrder,
         orderDTO.orderItemDTOS());
 
     List<OrderItemRegisteredResponseDTO> orderItemsDTO = new ArrayList<>();

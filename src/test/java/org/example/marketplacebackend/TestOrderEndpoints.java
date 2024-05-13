@@ -237,4 +237,10 @@ public class TestOrderEndpoints {
 
     response.andExpect(status().isNotFound());
   }
+
+  // TODO: Create this test
+  @Test
+  public void testMultipleOrdersSameProduct() {
+
+  }
 }
