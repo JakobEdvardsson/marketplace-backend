@@ -36,14 +36,17 @@ public class ProductOrderService {
       OrderItem orderItem = new OrderItem();
 
       Product product = productService.getProductOrNull(orderItemDTO.productId());
-      product.setIsPurchased(true);
-      productService.saveProduct(product);
 
-      orderItem.setProduct(product);
-      orderItem.setOrder(order);
+      if (!product.getIsPurchased()) {
+        product.setIsPurchased(true);
+        productService.saveProduct(product);
 
-      OrderItem saved = orderItemRepo.save(orderItem);
-      orderItemsDb.add(saved);
+        orderItem.setProduct(product);
+        orderItem.setOrder(order);
+
+        OrderItem saved = orderItemRepo.save(orderItem);
+        orderItemsDb.add(saved);
+      }
     }
 
     return orderItemsDb;

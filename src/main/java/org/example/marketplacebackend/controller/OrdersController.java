@@ -44,10 +44,10 @@ public class OrdersController {
     String username = principal.getName();
     Account authenticatedUser = userService.getAccountOrException(username);
 
-    ProductOrder order = new ProductOrder();
-    order.setBuyer(authenticatedUser);
+    ProductOrder dbInsertOrder = new ProductOrder();
+    dbInsertOrder.setBuyer(authenticatedUser);
 
-    ProductOrder productOrder = productOrderService.save(order);
+    ProductOrder productOrder = productOrderService.save(dbInsertOrder);
 
     List<OrderItem> orderItems = productOrderService.saveOrderItems(productOrder,
         orderDTO.orderItemDTOS());
@@ -63,8 +63,8 @@ public class OrdersController {
     }
 
     OrderRegisteredResponseDTO response = new OrderRegisteredResponseDTO(
-        order.getId(),
-        order.getTimeOfPurchase(),
+        productOrder.getId(),
+        productOrder.getTimeOfPurchase(),
         orderItemsDTO
     );
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
