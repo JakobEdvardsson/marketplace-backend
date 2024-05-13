@@ -7,5 +7,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<OrderItem, UUID> {
-  Optional<List<OrderItem>> findAllByOrder_Id(UUID orderId);
+  List<OrderItem> findAllByOrder_Id(UUID orderId);
 }

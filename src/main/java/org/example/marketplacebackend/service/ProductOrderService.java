@@ -34,8 +34,11 @@ public class ProductOrderService {
 
     for (OrderItemDTO orderItemDTO : orderItems) {
       OrderItem orderItem = new OrderItem();
+
       Product product = productService.getProductOrNull(orderItemDTO.productId());
       product.setIsPurchased(true);
+      productService.saveProduct(product);
+
       orderItem.setProduct(product);
       orderItem.setOrder(order);
 
@@ -55,14 +58,14 @@ public class ProductOrderService {
   }
 
   public List<ProductOrder> getAllOrders(UUID buyerId) {
-    return orderHistoryRepo.findAllByBuyer_Id(buyerId).orElse(null);
+    return orderHistoryRepo.findAllByBuyer_Id(buyerId);
   }
 
   public List<OrderItem> getAllOrderItemsByOrderId(UUID orderId) {
-    return orderItemRepo.findAllByOrder_Id(orderId).orElse(null);
+    return orderItemRepo.findAllByOrder_Id(orderId);
   }
 
-  public ProductOrder getProductOrderByBuyer_IdAndId(UUID buyerId, UUID id) {
+  public ProductOrder getProductOrderByBuyerIdAndId(UUID buyerId, UUID id) {
     return orderHistoryRepo.getProductOrderByBuyer_IdAndId(buyerId, id).orElse(null);
   }
 }

@@ -71,11 +71,16 @@ public class OrdersController {
   }
 
   @GetMapping("")
-  public ResponseEntity<?> getAllOrders(Principal principal) {
+  public ResponseEntity<?> getAllBuyOrders(Principal principal) {
     String username = principal.getName();
     Account authenticatedUser = userService.getAccountOrException(username);
 
     List<ProductOrder> orders = productOrderService.getAllOrders(authenticatedUser.getId());
+
+    if (orders.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     List<OrderRegisteredResponseDTO> ordersDTO = new ArrayList<>();
 
     // This converts the data queried from our database
@@ -103,13 +108,22 @@ public class OrdersController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
+  @GetMapping("/sold")
+  public ResponseEntity<?> getAllSoldOrders(Principal principal) {
+    String username = principal.getName();
+
+    Account authenticatedUser = userService.getAccountOrException(username);
+
+    return ResponseEntity.status(HttpStatus.OK).body("ANUS");
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<?> getOrderById(Principal principal, @PathVariable UUID id) {
     String username = principal.getName();
 
     Account authenticatedUser = userService.getAccountOrException(username);
 
-    ProductOrder order = productOrderService.getProductOrderByBuyer_IdAndId(
+    ProductOrder order = productOrderService.getProductOrderByBuyerIdAndId(
         authenticatedUser.getId(), id);
 
     if (order == null) {

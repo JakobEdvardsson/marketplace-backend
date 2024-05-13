@@ -49,7 +49,8 @@ public class SecurityConfig {
             "/v1/inbox/*",
             "/v1/accounts",
             "/v1/tests/username",
-            "/v1/orders"
+            "/v1/orders",
+            "/v1/orders/**"
         )
         .hasRole("USER")
     );
