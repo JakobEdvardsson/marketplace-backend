@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.example.marketplacebackend.DTO.outgoing.InboxGetAllResponseDTO;
@@ -15,7 +14,6 @@ import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Inbox;
 import org.example.marketplacebackend.repository.InboxRepository;
 import org.example.marketplacebackend.service.UserService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -37,7 +36,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class TestInboxEndpoints {
+@EnableWebMvc
+public class InboxEndpointsTests {
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
       "postgres:16-alpine"

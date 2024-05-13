@@ -1,6 +1,6 @@
 package org.example.marketplacebackend.config;
 
-import lombok.NonNull;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,8 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +24,6 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    //TODO: fix later
     http.cors(Customizer.withDefaults());
 
     //TODO: fix later
@@ -40,8 +40,9 @@ public class SecurityConfig {
             "/images/**",
             "/v1/categories",
             "/v1/products",
-            "/v1/products/**",
-            "/v1/orders"
+            "/v1/products/**"
+
+
         )
         .permitAll()
         //require auth to access these endpoints
@@ -49,7 +50,11 @@ public class SecurityConfig {
             "/v1/inbox",
             "/v1/inbox/*",
             "/v1/accounts",
-            "/v1/tests/username"
+            "/v1/tests/username",
+            "/v1/orders",
+            "/v1/orders/**",
+            "/v1/watchlist",
+            "/v1/watchlist/**"
         )
         .hasRole("USER")
     );
@@ -78,15 +83,24 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
+  // TODO: Investigate why CORS credentials can't be configured selectively:
+  //  When only allowing credentials for login/logout globally,
+  //  it seems to override the class level CORS configurations in controllers.
+  //  This results in credentials not being allowed in any other endpoints than login/logout.
+  //  As such, the following is a workaround which simply allows credentials for everything.
   @Bean
-  public WebMvcConfigurer corsConfigurer() {
-    return new WebMvcConfigurer() {
-      @Override
-      public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost:3000", "https://marketplace.johros.dev")
-            .allowCredentials(true);
-      }
-    };
+  CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration withCreds = new CorsConfiguration();
+    withCreds.setAllowedOrigins(List.of("http://localhost:3000","https://marketplace.johros.dev"));
+    withCreds.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    withCreds.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource config = new UrlBasedCorsConfigurationSource();
+    config.registerCorsConfiguration("/**", withCreds);
+    config.registerCorsConfiguration("/v1/accounts/login", withCreds);
+    config.registerCorsConfiguration("/v1/accounts/logout", withCreds);
+
+    return config;
   }
 
 }

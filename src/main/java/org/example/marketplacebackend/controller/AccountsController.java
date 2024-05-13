@@ -1,6 +1,7 @@
 package org.example.marketplacebackend.controller;
 
 import org.example.marketplacebackend.DTO.incoming.UserDTO;
+import org.example.marketplacebackend.DTO.outgoing.ProfileResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.UserRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.service.UserService;
@@ -10,9 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.util.UUID;
 
 @RequestMapping("v1/accounts")
-@CrossOrigin(origins = {"http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
+@CrossOrigin(origins = {
+    "http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
 @Controller
 public class AccountsController {
 
@@ -46,6 +49,19 @@ public class AccountsController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<?> getProfile(@PathVariable UUID id) {
+    Account user = userService.getAccountOrNull(id);
+
+    if (user == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    ProfileResponseDTO response = new ProfileResponseDTO(user.getFirstName(), user.getLastName(),
+        user.getEmail());
+
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
 
   @DeleteMapping("")
   public ResponseEntity<String> deleteUser(Principal principal) {

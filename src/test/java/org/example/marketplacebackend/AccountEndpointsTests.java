@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class TestAccountEndpoints {
+public class AccountEndpointsTests {
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
       "postgres:16-alpine"

@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class TestOrderEndpoints {
+public class OrderEndpointsTests {
 
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
@@ -68,7 +68,7 @@ public class TestOrderEndpoints {
       statements = """
           INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
           INSERT INTO product_category VALUES ('d5509745-450f-4760-8bdd-ddc88d376b37', 'electronics');
-          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
           """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
@@ -104,7 +104,7 @@ public class TestOrderEndpoints {
       statements = """
           INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
           INSERT INTO product_category VALUES ('d5509745-450f-4760-8bdd-ddc88d376b37', 'electronics');
-          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
           """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
@@ -128,7 +128,7 @@ public class TestOrderEndpoints {
       statements = """
           INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
           INSERT INTO product_category VALUES ('d5509745-450f-4760-8bdd-ddc88d376b37', 'electronics');
-          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
           """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
@@ -170,7 +170,7 @@ public class TestOrderEndpoints {
       statements = """
           INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
           INSERT INTO product_category VALUES ('d5509745-450f-4760-8bdd-ddc88d376b37', 'electronics');
-          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
           """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
@@ -217,7 +217,7 @@ public class TestOrderEndpoints {
       statements = """
           INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
           INSERT INTO product_category VALUES ('d5509745-450f-4760-8bdd-ddc88d376b37', 'electronics');
-          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'d5509745-450f-4760-8bdd-ddc88d376b37', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
           """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
@@ -236,5 +236,11 @@ public class TestOrderEndpoints {
     );
 
     response.andExpect(status().isNotFound());
+  }
+
+  // TODO: Create this test
+  @Test
+  public void testMultipleOrdersSameProduct() {
+
   }
 }

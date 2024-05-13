@@ -1,9 +1,13 @@
 package org.example.marketplacebackend.service;
 
+import jakarta.annotation.Nullable;
 import org.example.marketplacebackend.DTO.incoming.OrderItemDTO;
+import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderItemRegisteredResponseDTO;
+import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.OrderItem;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductOrder;
+import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.repository.OrderHistoryRepository;
 import org.example.marketplacebackend.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -29,40 +33,61 @@ public class ProductOrderService {
     return orderHistoryRepo.save(productOrder);
   }
 
-  public List<OrderItem> saveOrderItems(ProductOrder order, List<OrderItemDTO> orderItems) {
-    List<OrderItem> orderItemsDb = new ArrayList<>();
+  public List<OrderItemRegisteredResponseDTO> saveOrderItems(Account authenticatedUser,
+      ProductOrder order, List<OrderItemDTO> orderItems) {
+    List<OrderItemRegisteredResponseDTO> orderItemsDTO = new ArrayList<>();
 
-    // change product from is_purchased to true
     for (OrderItemDTO orderItemDTO : orderItems) {
-      OrderItem orderItem = new OrderItem();
+      OrderItem insert = new OrderItem();
       Product product = productService.getProductOrNull(orderItemDTO.productId());
-      orderItem.setProduct(product);
-      orderItem.setOrder(order);
 
-      OrderItem saved = orderItemRepo.save(orderItem);
-      orderItemsDb.add(saved);
+      if (product == null) {
+        continue;
+      } else if (product.getStatus() == ProductStatus.SOLD.ordinal()
+                 || product.getStatus() == ProductStatus.PENDING.ordinal()) {
+        OrderItemRegisteredResponseDTO orderItemDTOError = new OrderItemRegisteredResponseDTO(
+            product.getId(),
+            product.getName(),
+            product.getPrice(),
+            true
+        );
+        orderItemsDTO.add(orderItemDTOError);
+        continue;
+      }
+
+      product.setStatus(ProductStatus.PENDING.ordinal());
+      product.setBuyer(authenticatedUser);
+      productService.saveProduct(product);
+
+      insert.setProduct(product);
+      insert.setOrder(order);
+      OrderItem saved = orderItemRepo.save(insert);
+      OrderItemRegisteredResponseDTO orderItemDTOSuccess = new OrderItemRegisteredResponseDTO(
+          saved.getProduct().getId(),
+          saved.getProduct().getName(),
+          saved.getProduct().getPrice(),
+          false
+      );
+
+      orderItemsDTO.add(orderItemDTOSuccess);
     }
 
-    return orderItemsDb;
+    return orderItemsDTO;
   }
 
-  public OrderItem getOrderItemOrNull(UUID orderId) {
+  public @Nullable OrderItem getOrderItemOrNull(UUID orderId) {
     return orderItemRepo.findById(orderId).orElse(null);
   }
 
-  public ProductOrder getOrderOrNull(UUID orderId) {
+  public @Nullable ProductOrder getOrderOrNull(UUID orderId) {
     return orderHistoryRepo.findById(orderId).orElse(null);
   }
 
   public List<ProductOrder> getAllOrders(UUID buyerId) {
-    return orderHistoryRepo.findAllByBuyer_Id(buyerId).orElse(null);
+    return orderHistoryRepo.findAllByBuyer_Id(buyerId);
   }
 
-  public List<OrderItem> getAllOrderItemsByOrderId(UUID orderId) {
-    return orderItemRepo.findAllByOrder_Id(orderId).orElse(null);
-  }
-
-  public ProductOrder getProductOrderByBuyer_IdAndId(UUID buyerId, UUID id) {
+  public ProductOrder getProductOrderByBuyerIdAndId(UUID buyerId, UUID id) {
     return orderHistoryRepo.getProductOrderByBuyer_IdAndId(buyerId, id).orElse(null);
   }
 }

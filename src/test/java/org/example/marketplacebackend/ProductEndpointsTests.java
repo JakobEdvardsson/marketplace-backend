@@ -46,8 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class TestProductEndpoints {
-
+public class ProductEndpointsTests {
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
       "postgres:16-alpine"
@@ -156,10 +155,10 @@ public class TestProductEndpoints {
   @Test
   @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
       statements = """
-          INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
-          INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
-          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
-          """)
+      INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
+      INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
+      INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+      """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
           DELETE FROM product WHERE id = '3ce17658-9107-4154-9ead-e22c5d6508a5';
@@ -169,11 +168,9 @@ public class TestProductEndpoints {
   public void getAllProductsByCategorySuccess() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products?category=kebab"));
 
-    String response = getProducts
+    getProducts
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn().getResponse().getContentAsString();
-    System.out.println(response);
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
 
   @Test
@@ -214,18 +211,19 @@ public class TestProductEndpoints {
   @Test
   @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
       statements = """
-          INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
-          INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
-          INSERT INTO product (id, name, product_category, price, condition, is_purchased, description, seller, buyer, color, production_year) VALUES ('798bdcaf-03c7-4fec-8b87-482ed7cac83d', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, false, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
-          """)
+
+      INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
+      INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
+      INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+      """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
-          DELETE FROM product WHERE id = '798bdcaf-03c7-4fec-8b87-482ed7cac83d';
-          DELETE FROM product_category WHERE id = '4205756e-6f31-4c34-b8ed-52aca7a64fbf';
-          DELETE FROM account WHERE id = '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee';
-          """)
+      DELETE FROM product WHERE id = '3ce17658-9107-4154-9ead-e22c5d6508a5';
+      DELETE FROM product_category WHERE id = '4205756e-6f31-4c34-b8ed-52aca7a64fbf';
+      DELETE FROM account WHERE id = '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee';
+      """)
   public void getProductByIdSuccessful() throws Exception {
-    String id = "798bdcaf-03c7-4fec-8b87-482ed7cac83d";
+    String id = "3ce17658-9107-4154-9ead-e22c5d6508a5";
     String endPoint = "/v1/products/" + id;
 
     ResultActions getProducts = mockMvc.perform(get(endPoint));

@@ -54,7 +54,7 @@ create table product
   condition        integer                                            not null
     constraint check_condition_range
       check ((condition >= 0) AND (condition <= 4)),
-  is_purchased     boolean                                            not null,
+  status           integer                                            not null,
   description      text                                               not null,
   seller           uuid                                               not null
     constraint product_seller_fk
@@ -68,21 +68,21 @@ create table product
       check ((production_year >= 2000) AND (production_year <= 2100)),
   created_at       timestamp with time zone default now()             not null,
   constraint check_valid_purchase_status
-    check (((buyer IS NULL) AND (is_purchased IS FALSE)) OR
-           ((buyer IS NOT NULL) AND (is_purchased IS TRUE)))
+    check (((buyer IS NULL) AND (status = 0)) OR ((buyer IS NOT NULL) AND (status = 1)) OR
+           ((buyer IS NOT NULL) AND (status = 2)))
 );
 
 create index product_buyer_index
   on product (buyer);
-
-create index product_is_purchased_index
-  on product (is_purchased);
 
 create index product_seller_index
   on product (seller);
 
 create index product_product_category_index
   on product (product_category);
+
+create index product_is_purchased_index
+  on product (status);
 
 create table product_image
 (
@@ -130,19 +130,19 @@ create index product_order_buyer_id_index
 
 create table watchlist
 (
-  product_type_id uuid                           not null
+  product_category_id uuid                           not null
     constraint watchlist_product_type_id_fk
       references product_category,
-  subscriber_id   uuid                           not null
+  subscriber_id       uuid                           not null
     constraint watchlist_account_id_fk
       references account,
-  id              uuid default gen_random_uuid() not null
+  id                  uuid default gen_random_uuid() not null
     constraint watchlist_pk
       primary key
 );
 
-create index watchlist_product_type_id_index
-  on watchlist (product_type_id);
+create index watchlist_product_category_id_index
+  on watchlist (product_category_id);
 
 create index watchlist_subscriber_id_index
   on watchlist (subscriber_id);

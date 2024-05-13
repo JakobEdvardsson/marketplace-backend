@@ -1,11 +1,8 @@
 package org.example.marketplacebackend.repository;
 
+import java.util.UUID;
 import org.example.marketplacebackend.model.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<OrderItem, UUID> {
-  Optional<List<OrderItem>> findAllByOrder_Id(UUID orderId);
 }
