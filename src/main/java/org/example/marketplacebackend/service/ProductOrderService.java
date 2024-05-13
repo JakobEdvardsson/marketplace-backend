@@ -7,6 +7,7 @@ import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.OrderItem;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductOrder;
+import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.repository.OrderHistoryRepository;
 import org.example.marketplacebackend.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,8 @@ public class ProductOrderService {
 
       if (product == null) {
         continue;
-      } else if (product.getIsPurchased()) {
+      } else if (product.getStatus() == ProductStatus.SOLD.ordinal()
+                 || product.getStatus() == ProductStatus.PENDING.ordinal()) {
         OrderItemRegisteredResponseDTO orderItemDTOError = new OrderItemRegisteredResponseDTO(
             product.getId(),
             product.getName(),
@@ -50,14 +52,15 @@ public class ProductOrderService {
             true
         );
         orderItemsDTO.add(orderItemDTOError);
+        continue;
       }
 
-      product.setIsPurchased(true);
+      product.setStatus(ProductStatus.PENDING.ordinal());
       product.setBuyer(authenticatedUser);
       productService.saveProduct(product);
+
       insert.setProduct(product);
       insert.setOrder(order);
-
       OrderItem saved = orderItemRepo.save(insert);
       OrderItemRegisteredResponseDTO orderItemDTOSuccess = new OrderItemRegisteredResponseDTO(
           saved.getProduct().getId(),
@@ -82,10 +85,6 @@ public class ProductOrderService {
 
   public List<ProductOrder> getAllOrders(UUID buyerId) {
     return orderHistoryRepo.findAllByBuyer_Id(buyerId);
-  }
-
-  public List<OrderItem> getAllOrderItemsByOrderId(UUID orderId) {
-    return orderItemRepo.findAllByOrder_Id(orderId);
   }
 
   public ProductOrder getProductOrderByBuyerIdAndId(UUID buyerId, UUID id) {

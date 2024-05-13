@@ -1,19 +1,25 @@
 package org.example.marketplacebackend.controller;
 
 import org.example.marketplacebackend.DTO.incoming.OrderDTO;
+import org.example.marketplacebackend.DTO.incoming.StatusDTO;
 import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderGetAllResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderGetResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderItemRegisteredResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderRegisteredResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderStatusResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.OrderItem;
+import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductOrder;
+import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.service.ProductOrderService;
+import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,11 +38,13 @@ public class OrdersController {
 
   private final ProductOrderService productOrderService;
   private final UserService userService;
+  private final ProductService productService;
 
   public OrdersController(ProductOrderService productOrderService,
-      UserService userService) {
+      UserService userService, ProductService productService) {
     this.productOrderService = productOrderService;
     this.userService = userService;
+    this.productService = productService;
   }
 
   @PostMapping("")
@@ -49,7 +57,8 @@ public class OrdersController {
 
     ProductOrder productOrder = productOrderService.save(dbInsertOrder);
 
-    List<OrderItemRegisteredResponseDTO> orderItemsDTO = productOrderService.saveOrderItems(authenticatedUser, productOrder,
+    List<OrderItemRegisteredResponseDTO> orderItemsDTO = productOrderService.saveOrderItems(
+        authenticatedUser, productOrder,
         orderDTO.orderItemDTOS());
 
     OrderRegisteredResponseDTO response = new OrderRegisteredResponseDTO(
@@ -72,10 +81,9 @@ public class OrdersController {
     }
 
     List<OrderRegisteredResponseDTO> ordersDTO = new ArrayList<>();
-
+    // select
     for (ProductOrder productOrder : orders) {
-      List<OrderItem> orderItems = productOrderService.getAllOrderItemsByOrderId(
-          productOrder.getId());
+      List<OrderItem> orderItems = productOrder.getOrderItems();
       List<OrderItemRegisteredResponseDTO> orderItemsDTO = new ArrayList<>();
 
       for (OrderItem orderItem : orderItems) {
@@ -97,13 +105,36 @@ public class OrdersController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-  @GetMapping("/sold")
-  public ResponseEntity<?> getAllSoldOrders(Principal principal) {
+  @PatchMapping("/{productId}")
+  public ResponseEntity<?> setOrderStatus(Principal principal, @PathVariable UUID productId,
+      @RequestBody
+      StatusDTO statusDTO) {
     String username = principal.getName();
 
     Account authenticatedUser = userService.getAccountOrException(username);
+    Product product = productService.findProductByIdAndSeller(productId, authenticatedUser);
 
-    return ResponseEntity.status(HttpStatus.OK).body("ANUS");
+    if (product == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    if (product.getBuyer() == null || product.getStatus() != ProductStatus.PENDING.ordinal()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    if (statusDTO.accept()) {
+      product.setStatus(ProductStatus.SOLD.ordinal());
+      productService.saveProduct(product);
+      OrderStatusResponseDTO response = new OrderStatusResponseDTO(ProductStatus.SOLD.ordinal());
+      return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    } else {
+      product.setStatus(ProductStatus.AVAILABLE.ordinal());
+      productService.saveProduct(product);
+      OrderStatusResponseDTO response = new OrderStatusResponseDTO(
+          ProductStatus.AVAILABLE.ordinal());
+      return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
   }
 
   @GetMapping("/{id}")
@@ -119,7 +150,7 @@ public class OrdersController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    List<OrderItem> orderItems = productOrderService.getAllOrderItemsByOrderId(id);
+    List<OrderItem> orderItems = order.getOrderItems();
 
     List<OrderItemRegisteredResponseDTO> orderItemsDTO = new ArrayList<>();
     for (OrderItem item : orderItems) {

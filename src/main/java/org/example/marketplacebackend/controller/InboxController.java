@@ -38,22 +38,21 @@ public class InboxController {
     this.userService = userService;
   }
 
-    /*
-  @PostMapping("") //TODO: ASK ABOUT LINK FOR INBOX
-  public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) {
-    Inbox inbox = new Inbox();
+  /*
+@PostMapping("") //TODO: ASK ABOUT LINK FOR INBOX
+public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) {
+  Inbox inbox = new Inbox();
 
-    inbox.setAccount(user);
-    inbox.setMessage(message);
-    inbox.setIsRead(false);
+  inbox.setAccount(user);
+  inbox.setMessage(message);
+  inbox.setIsRead(false);
 
-    MessageCreatedResponseDTO messageDTO = new MessageCreatedResponseDTO(user, message, false);
+  MessageCreatedResponseDTO messageDTO = new MessageCreatedResponseDTO(user, message, false);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(messageDTO);
+  return ResponseEntity.status(HttpStatus.CREATED).body(messageDTO);
 
-  }
-   */
-
+}
+ */
   @Transactional
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteMessage(

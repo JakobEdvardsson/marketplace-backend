@@ -81,4 +81,13 @@ public class ProductService {
   public Product findProductByIdAndSeller(UUID id, Account seller) {
     return productRepo.findProductByIdAndSeller(id, seller).orElse(null);
   }
+
+  public List<Product> getActiveListings(Account seller) {
+    return productRepo.getActiveListingsHydrateProductCategoryAndBuyer(seller);
+  }
+
+  public List<Product> getSoldProducts(Account seller) {
+    return productRepo.getSoldProducts(seller);
+  }
+
 }

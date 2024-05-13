@@ -1,4 +1,4 @@
-package org.example.marketplacebackend.DTO.outgoing;
+package org.example.marketplacebackend.DTO.outgoing.productDTOs;
 
 import org.example.marketplacebackend.model.Product;
 import java.util.List;

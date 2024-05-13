@@ -30,7 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-class TestWatchlistController {
+class WatchlistControllerTests {
 
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(

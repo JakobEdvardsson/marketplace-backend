@@ -4,6 +4,7 @@ import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.model.ProductCategory;
+import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.repository.AccountRepository;
 import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.example.marketplacebackend.repository.ProductImageRepository;
@@ -82,7 +83,7 @@ class MarketplaceBackendApplicationTests {
     product.setSeller(savedSeller);
     product.setBuyer(null);
     product.setDescription("hi description");
-    product.setIsPurchased(false);
+    product.setStatus(ProductStatus.AVAILABLE.ordinal());
     product.setColor(1);
     product.setProductCategory(savedProductType);
     product.setPrice(1337);
