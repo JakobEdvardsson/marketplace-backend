@@ -13,4 +13,6 @@ public interface InboxRepository extends JpaRepository<Inbox, UUID> {
   Optional<Inbox> findByIdAndReceiver(UUID id, Account receiver);
 
   Long deleteByIdAndReceiver(UUID id, Account authenticatedUser);
+
+  //Optional<Inbox> newMessageReceived()
 }

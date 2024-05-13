@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RequestMapping("/v1/inbox")
 @CrossOrigin(origins = { "http://localhost:3000, https://marketplace.johros.dev" }, allowCredentials = "true")
@@ -36,6 +37,16 @@ public class InboxController {
         this.inboxRepository = inboxRepository;
         this.userService = userService;
     }
+
+  @GetMapping("/stream")
+  public SseEmitter streamSseMvc(Principal principal) {
+    Account authenticatedUser = userService.getAccountOrException(principal.getName());
+    SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+    userService.addEmitter(authenticatedUser.getId(), emitter);
+    emitter.onCompletion(() -> userService.removeEmitter(authenticatedUser.getId(), emitter));
+    emitter.onTimeout(() -> userService.removeEmitter(authenticatedUser.getId(), emitter));
+    return emitter;
+  }
 
     /*
   @PostMapping("") //TODO: ASK ABOUT LINK FOR INBOX

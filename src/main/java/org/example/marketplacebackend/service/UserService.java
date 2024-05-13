@@ -1,6 +1,9 @@
 package org.example.marketplacebackend.service;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.NonNull;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.repository.AccountRepository;
@@ -8,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
  * This class is responsible for handling user management operations.
@@ -17,6 +21,7 @@ public class UserService {
 
   private final AccountRepository accountRepo;
   private final PasswordEncoder passwordEncoder;
+  private Map<UUID, SseEmitter> userEmitters;
 
   @Autowired
   public UserService(AccountRepository accountRepo, PasswordEncoder passwordEncoder) {
@@ -110,5 +115,24 @@ public class UserService {
    */
   public void deleteUser(Account targetUser) {
     accountRepo.delete(targetUser);
+  }
+
+  public void addEmitter(UUID userId, SseEmitter emitter) {
+    userEmitters.put(userId, emitter);
+  }
+
+  public void removeEmitter(UUID userId, SseEmitter emitter) {
+    userEmitters.remove(userId, emitter);
+  }
+
+  public void broadcastToUser(UUID userId, String message) {
+    SseEmitter emitter = userEmitters.get(userId);
+    if (emitter != null) {
+      try {
+        emitter.send(SseEmitter.event().name("message").data(message));
+      } catch (IOException e) {
+        emitter.completeWithError(e);
+      }
+    }
   }
 }
