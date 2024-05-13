@@ -1,5 +1,8 @@
 package org.example.marketplacebackend.controller;
 
+
+import com.amazonaws.SdkBaseException;
+import com.amazonaws.SdkClientException;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProfileResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ActiveListingDTO;
@@ -17,7 +20,9 @@ import org.example.marketplacebackend.service.CategoryService;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,9 +33,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,6 +67,7 @@ public class ProductsController {
       @RequestPart(value = "json") ProductDTO product,
       @RequestParam(value = "data") MultipartFile[] files
   ) throws Exception {
+
     String username = principal.getName();
     Account authenticatedUser = userService.getAccountOrException(username);
 
@@ -81,8 +90,17 @@ public class ProductsController {
     Product productDB = productService.saveProduct(productModel);
 
     // Upload images and add to product model
-    List<ProductImage> uploadedImages = productImageService.saveFiles(productDB.getId(),
-        files);
+    List<ProductImage> uploadedImages;
+    try {
+      uploadedImages = productImageService.saveFiles(productDB.getId(),
+          files);
+    } catch (IOException | SdkClientException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    } catch (MaxUploadSizeExceededException e) {
+      return ResponseEntity.status(413).build();
+    }
     productModel.setProductImages(uploadedImages);
 
     // Get all image urls from all image objects
