@@ -60,7 +60,10 @@ public class WatchlistController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    if (!productCategoryRepository.existsById(productCategoryID)) {
+    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID)
+        .orElse(null);
+
+    if (productCategory == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
@@ -72,13 +75,6 @@ public class WatchlistController {
 
     Watchlist watchList = new Watchlist();
     watchList.setSubscriber(authenticatedUser);
-
-    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID)
-        .orElse(null);
-
-    if (productCategory == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
 
     watchList.setProductCategory(productCategory);
 
