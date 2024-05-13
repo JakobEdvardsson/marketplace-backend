@@ -32,10 +32,10 @@ public class ProductOrderService {
   public List<OrderItem> saveOrderItems(ProductOrder order, List<OrderItemDTO> orderItems) {
     List<OrderItem> orderItemsDb = new ArrayList<>();
 
-    // change product from is_purchased to true
     for (OrderItemDTO orderItemDTO : orderItems) {
       OrderItem orderItem = new OrderItem();
       Product product = productService.getProductOrNull(orderItemDTO.productId());
+      product.setIsPurchased(true);
       orderItem.setProduct(product);
       orderItem.setOrder(order);
 
