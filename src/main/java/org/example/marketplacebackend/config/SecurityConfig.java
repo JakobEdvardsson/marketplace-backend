@@ -41,6 +41,8 @@ public class SecurityConfig {
             "/v1/categories",
             "/v1/products",
             "/v1/products/**"
+
+
         )
         .permitAll()
         //require auth to access these endpoints
@@ -51,6 +53,8 @@ public class SecurityConfig {
             "/v1/tests/username",
             "/v1/orders",
             "/v1/orders/**"
+            "/v1/watchlist",
+            "/v1/watchlist/**"
         )
         .hasRole("USER")
     );
