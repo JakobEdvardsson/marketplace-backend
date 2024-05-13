@@ -4,6 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 public class ProductEndpointsTests {
+
   @Container
   private static final PostgreSQLContainer<?> DB = new PostgreSQLContainer<>(
       "postgres:16-alpine"
@@ -137,9 +139,9 @@ public class ProductEndpointsTests {
         .build();
 
     for (String imageUrl : imageUrlsStrings) {
-      s3Client.deleteObject("blocket-clone",
+      s3Client.deleteObject(new DeleteObjectRequest("blocket-clone",
           imageUrl.split("https://blocket-clone.ams3.cdn.digitaloceanspaces.com/")[1].split(
-              "\"")[0]);
+              "\"")[0]));
     }
   }
 
@@ -155,10 +157,10 @@ public class ProductEndpointsTests {
   @Test
   @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
       statements = """
-      INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
-      INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
-      INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
-      """)
+          INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
+          INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
+          INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
           DELETE FROM product WHERE id = '3ce17658-9107-4154-9ead-e22c5d6508a5';
@@ -198,7 +200,6 @@ public class ProductEndpointsTests {
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode jsonNode = mapper.readTree(responseCreateProduct);
-    JsonNode imageUrls = jsonNode.get("imageUrls");
 
     String id = jsonNode.get("id").toString();
     String endPoint = "/v1/products/" + id.substring(1, id.length() - 1);
@@ -212,16 +213,16 @@ public class ProductEndpointsTests {
   @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
       statements = """
 
-      INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
-      INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
-      INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
-      """)
+          INSERT INTO account (id, first_name, last_name, date_of_birth, email, password, username) VALUES ('3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', 'Ken', 'Thompson', '1943-02-04', 'ken@example.com', '$2a$10$gIwb60Eio1J1UYWqCrV4je9kAzsqra0kzwg5fcKRCauzGUQ2xmx3q', 'ken');
+          INSERT INTO product_category (id, name) VALUES ('4205756e-6f31-4c34-b8ed-52aca7a64fbf', 'kebab');
+          INSERT INTO product (id, name, product_category, price, condition, status, description, seller, buyer, color, production_year) VALUES ('3ce17658-9107-4154-9ead-e22c5d6508a5', 'name' ,'4205756e-6f31-4c34-b8ed-52aca7a64fbf', 500, 0, 0, 'description', '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee', null, 0, 2024);
+          """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
-      DELETE FROM product WHERE id = '3ce17658-9107-4154-9ead-e22c5d6508a5';
-      DELETE FROM product_category WHERE id = '4205756e-6f31-4c34-b8ed-52aca7a64fbf';
-      DELETE FROM account WHERE id = '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee';
-      """)
+          DELETE FROM product WHERE id = '3ce17658-9107-4154-9ead-e22c5d6508a5';
+          DELETE FROM product_category WHERE id = '4205756e-6f31-4c34-b8ed-52aca7a64fbf';
+          DELETE FROM account WHERE id = '3a45dc5e-2a30-41ba-b488-ca4b113ea5ee';
+          """)
   public void getProductByIdSuccessful() throws Exception {
     String id = "3ce17658-9107-4154-9ead-e22c5d6508a5";
     String endPoint = "/v1/products/" + id;
