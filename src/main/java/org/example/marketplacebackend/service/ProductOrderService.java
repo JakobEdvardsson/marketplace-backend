@@ -1,5 +1,6 @@
 package org.example.marketplacebackend.service;
 
+import jakarta.annotation.Nullable;
 import org.example.marketplacebackend.DTO.incoming.OrderItemDTO;
 import org.example.marketplacebackend.model.OrderItem;
 import org.example.marketplacebackend.model.Product;
@@ -37,7 +38,7 @@ public class ProductOrderService {
 
       Product product = productService.getProductOrNull(orderItemDTO.productId());
 
-      if (!product.getIsPurchased()) {
+      if (product != null && !product.getIsPurchased()) {
         product.setIsPurchased(true);
         productService.saveProduct(product);
 
@@ -52,11 +53,11 @@ public class ProductOrderService {
     return orderItemsDb;
   }
 
-  public OrderItem getOrderItemOrNull(UUID orderId) {
+  public @Nullable OrderItem getOrderItemOrNull(UUID orderId) {
     return orderItemRepo.findById(orderId).orElse(null);
   }
 
-  public ProductOrder getOrderOrNull(UUID orderId) {
+  public @Nullable ProductOrder getOrderOrNull(UUID orderId) {
     return orderHistoryRepo.findById(orderId).orElse(null);
   }
 
