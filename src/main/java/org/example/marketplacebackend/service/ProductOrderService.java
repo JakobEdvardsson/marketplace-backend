@@ -43,7 +43,8 @@ public class ProductOrderService {
 
       if (product == null) {
         continue;
-      } else if (product.getStatus() == ProductStatus.SOLD.ordinal()) {
+      } else if (product.getStatus() == ProductStatus.SOLD.ordinal()
+                 || product.getStatus() == ProductStatus.PENDING.ordinal()) {
         OrderItemRegisteredResponseDTO orderItemDTOError = new OrderItemRegisteredResponseDTO(
             product.getId(),
             product.getName(),
@@ -51,14 +52,15 @@ public class ProductOrderService {
             true
         );
         orderItemsDTO.add(orderItemDTOError);
+        continue;
       }
 
       product.setStatus(ProductStatus.PENDING.ordinal());
       product.setBuyer(authenticatedUser);
       productService.saveProduct(product);
+
       insert.setProduct(product);
       insert.setOrder(order);
-
       OrderItem saved = orderItemRepo.save(insert);
       OrderItemRegisteredResponseDTO orderItemDTOSuccess = new OrderItemRegisteredResponseDTO(
           saved.getProduct().getId(),
@@ -83,10 +85,6 @@ public class ProductOrderService {
 
   public List<ProductOrder> getAllOrders(UUID buyerId) {
     return orderHistoryRepo.findAllByBuyer_Id(buyerId);
-  }
-
-  public List<OrderItem> getAllOrderItemsByOrderId(UUID orderId) {
-    return orderItemRepo.findAllByOrder_Id(orderId);
   }
 
   public ProductOrder getProductOrderByBuyerIdAndId(UUID buyerId, UUID id) {
