@@ -54,28 +54,32 @@ public class WatchlistController {
 
   @PostMapping("")
   public ResponseEntity<?> postWatchListItem(Principal user,
-      @RequestBody ProductCategoryDTO productCategoryDTO) {
+      @RequestBody UUID productCategoryID) {
 
-    if (productCategoryDTO == null || productCategoryDTO.id() == null) {
+    if (productCategoryID == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    if (!productCategoryRepository.existsById(productCategoryDTO.id())) {
+    if (!productCategoryRepository.existsById(productCategoryID)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     Account authenticatedUser = userService.getAccountOrException(user.getName());
     if (watchListRepository.existsBySubscriberAndProductCategoryId(authenticatedUser,
-        productCategoryDTO.id())) {
+        productCategoryID)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     Watchlist watchList = new Watchlist();
     watchList.setSubscriber(authenticatedUser);
 
-    ProductCategory productCategory = new ProductCategory();
-    productCategory.setId(productCategoryDTO.id());
-    productCategory.setName(productCategoryDTO.name());
+    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID)
+        .orElse(null);
+
+    if (productCategory == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
     watchList.setProductCategory(productCategory);
 
     Watchlist returnWatchList = watchListRepository.save(watchList);

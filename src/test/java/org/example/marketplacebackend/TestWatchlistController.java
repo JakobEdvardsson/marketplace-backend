@@ -94,7 +94,7 @@ class TestWatchlistController {
         UUID.fromString("fdeb0281-1481-45f9-b005-e02bba579085")).orElseThrow();
 
     ObjectMapper objectMapper = new ObjectMapper();
-    String json = objectMapper.writeValueAsString(productCategory);
+    String json = objectMapper.writeValueAsString(productCategory.getId());
 
     ResultActions resultActions = mockMvc.perform(post("/v1/watchlist")
         .principal(() -> "usernameInbox")
