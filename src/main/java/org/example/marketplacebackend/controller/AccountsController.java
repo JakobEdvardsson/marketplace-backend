@@ -1,5 +1,6 @@
 package org.example.marketplacebackend.controller;
 
+import org.example.marketplacebackend.DTO.incoming.PasswordChangeDTO;
 import org.example.marketplacebackend.DTO.incoming.UserDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProfileResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.UserRegisteredResponseDTO;
@@ -25,6 +26,18 @@ public class AccountsController {
   public AccountsController(UserService userService, PasswordEncoder passwordEncoder) {
     this.userService = userService;
     this.passwordEncoder = passwordEncoder;
+  }
+
+  @PostMapping("/password")
+  public ResponseEntity<String> changeUserPassword(Principal principal, @RequestBody PasswordChangeDTO passwordChangeDTO) {
+    Account authenticatedUser = userService.getAccountOrException(principal.getName());
+
+    boolean successful = userService.passwordChange(authenticatedUser, passwordChangeDTO.oldPassword(), passwordChangeDTO.newPassword());
+    if (!successful) {
+      return ResponseEntity.badRequest().build();
+    }
+
+    return ResponseEntity.ok().build();
   }
 
   @PostMapping("/register")

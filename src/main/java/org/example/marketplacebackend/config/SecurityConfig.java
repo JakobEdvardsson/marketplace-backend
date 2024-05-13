@@ -38,6 +38,7 @@ public class SecurityConfig {
             "/v1/accounts/logout",
             "/v1/accounts/register",
             "/v1/accounts/*",
+            "/v1/accounts/password",
             "/images/**",
             "/v1/categories",
             "/v1/products",
