@@ -67,9 +67,6 @@ public class TestProductEndpoints {
   @Autowired
   private WebApplicationContext webApplicationContext;
 
-  @Autowired
-  private ProductImageService productImageService;
-
   @Value("${SPACE_ACCESS_KEY}")
   private String SPACE_ACCESS_KEY;
   @Value("${SPACES_SECRET_KEY}")
