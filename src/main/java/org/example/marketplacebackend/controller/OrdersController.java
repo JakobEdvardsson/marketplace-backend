@@ -49,18 +49,8 @@ public class OrdersController {
 
     ProductOrder productOrder = productOrderService.save(dbInsertOrder);
 
-    List<OrderItem> orderItems = productOrderService.saveOrderItems(authenticatedUser, productOrder,
+    List<OrderItemRegisteredResponseDTO> orderItemsDTO = productOrderService.saveOrderItems(authenticatedUser, productOrder,
         orderDTO.orderItemDTOS());
-
-    List<OrderItemRegisteredResponseDTO> orderItemsDTO = new ArrayList<>();
-    for (OrderItem item : orderItems) {
-      OrderItemRegisteredResponseDTO orderItemDTO = new OrderItemRegisteredResponseDTO(
-          item.getProduct().getId(),
-          item.getProduct().getName(),
-          item.getProduct().getPrice()
-      );
-      orderItemsDTO.add(orderItemDTO);
-    }
 
     OrderRegisteredResponseDTO response = new OrderRegisteredResponseDTO(
         productOrder.getId(),
@@ -83,8 +73,6 @@ public class OrdersController {
 
     List<OrderRegisteredResponseDTO> ordersDTO = new ArrayList<>();
 
-    // This converts the data queried from our database
-    // to safe DTOs that only send we want.
     for (ProductOrder productOrder : orders) {
       List<OrderItem> orderItems = productOrderService.getAllOrderItemsByOrderId(
           productOrder.getId());
@@ -94,7 +82,8 @@ public class OrdersController {
         OrderItemRegisteredResponseDTO orderItemDTO = new OrderItemRegisteredResponseDTO(
             orderItem.getOrder().getId(),
             orderItem.getProduct().getName(),
-            orderItem.getProduct().getPrice()
+            orderItem.getProduct().getPrice(),
+            false
         );
         orderItemsDTO.add(orderItemDTO);
       }
@@ -137,7 +126,8 @@ public class OrdersController {
       OrderItemRegisteredResponseDTO orderItemDTO = new OrderItemRegisteredResponseDTO(
           item.getProduct().getId(),
           item.getProduct().getName(),
-          item.getProduct().getPrice()
+          item.getProduct().getPrice(),
+          false
       );
       orderItemsDTO.add(orderItemDTO);
     }
