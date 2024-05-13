@@ -1,5 +1,6 @@
 package org.example.marketplacebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -58,5 +59,6 @@ public class Product {
   private Instant createdAt;
 
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+  @JsonManagedReference
   private List<ProductImage> productImages;
 }
