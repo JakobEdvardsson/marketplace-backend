@@ -129,7 +129,10 @@ public class OrdersController {
       return ResponseEntity.status(HttpStatus.OK).body(response);
 
     } else {
+      productOrderService.getOrderForProduct(product).ifPresent(productOrderService::deleteOrderItem);
+
       product.setStatus(ProductStatus.AVAILABLE.ordinal());
+      product.setBuyer(null);
       productService.saveProduct(product);
       OrderStatusResponseDTO response = new OrderStatusResponseDTO(
           ProductStatus.AVAILABLE.ordinal());
