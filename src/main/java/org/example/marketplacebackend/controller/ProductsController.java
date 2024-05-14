@@ -3,6 +3,7 @@ package org.example.marketplacebackend.controller;
 
 import com.amazonaws.SdkBaseException;
 import com.amazonaws.SdkClientException;
+import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProfileResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ActiveListingDTO;
@@ -169,7 +170,13 @@ public class ProductsController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    ProductGetResponseDTO response = new ProductGetResponseDTO(product);
+    ProductCategory productCategory = product.getProductCategory();
+    ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO(productCategory.getId(), productCategory.getName());
+    ProductGetResponseDTO response = new ProductGetResponseDTO(product.getId(),
+        product.getName(), productCategoryDTO, product.getPrice(), product.getCondition(),
+        product.getStatus(), product.getDescription(), product.getSeller().getId(), product.getBuyer().getId(),
+        product.getColor(), product.getProductionYear(), product.getCreatedAt());
+
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
