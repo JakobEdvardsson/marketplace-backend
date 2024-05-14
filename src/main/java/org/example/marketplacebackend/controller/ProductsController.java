@@ -10,6 +10,7 @@ import org.example.marketplacebackend.DTO.outgoing.productDTOs.ActiveListingDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ActiveListingsDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.GetAllSoldProductsResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.GetSoldProductResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetAllResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
@@ -119,11 +120,10 @@ public class ProductsController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  // TODO: Use product DTO here instead of Product model
   @GetMapping("")
   public ResponseEntity<?> getProducts(
       @RequestParam(name = "category", required = false) String category) {
-    List<Product> products;
+    ProductGetAllResponseDTO products;
 
     if (category == null) {
       products = productService.findTop20ByOrderByCreatedAtDesc();
@@ -135,8 +135,8 @@ public class ProductsController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body("That product category does not exist");
     }
+    
     products = productService.getAllByProductCategory(productCategory);
-
     return ResponseEntity.status(HttpStatus.OK).body(products);
   }
 
@@ -171,10 +171,12 @@ public class ProductsController {
     }
 
     ProductCategory productCategory = product.getProductCategory();
-    ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO(productCategory.getId(), productCategory.getName());
+    ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO(productCategory.getId(),
+        productCategory.getName());
     ProductGetResponseDTO response = new ProductGetResponseDTO(product.getId(),
         product.getName(), productCategoryDTO, product.getPrice(), product.getCondition(),
-        product.getStatus(), product.getDescription(), product.getSeller().getId(), product.getBuyer().getId(),
+        product.getStatus(), product.getDescription(), product.getSeller().getId(),
+        product.getBuyer() != null ? product.getBuyer().getId() : null,
         product.getColor(), product.getProductionYear(), product.getCreatedAt());
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
