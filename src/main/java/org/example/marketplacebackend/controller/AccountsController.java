@@ -58,7 +58,7 @@ public class AccountsController {
     }
 
     ProfileResponseDTO response = new ProfileResponseDTO(user.getFirstName(), user.getLastName(),
-        user.getEmail());
+        user.getUsername());
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
