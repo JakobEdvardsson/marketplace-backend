@@ -1,11 +1,15 @@
 package org.example.marketplacebackend.service;
 
+import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetAllResponseDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,28 +30,50 @@ public class ProductService {
     return productRepo.findById(id).orElse(null);
   }
 
-  public List<Product> getAllByProductCategory(ProductCategory category) {
-    return productRepo.getAllByProductCategory(category);
+  public ProductGetAllResponseDTO getAllByProductCategory(ProductCategory category) {
+    List<Product> products = productRepo.getAllByProductCategory(category);
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
   }
 
+  public ProductGetAllResponseDTO findTop20ByOrderByCreatedAtDesc() {
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+    List<Product> products = productRepo.findTop20ByOrderByCreatedAtDesc();
+
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+      return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
+  private void convertProductsToDTO(List<Product> products,
+      List<ProductGetResponseDTO> productGetResponseDTOList) {
+    for (Product product : products) {
+      ProductCategory productCategoryDb = product.getProductCategory();
+      ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO(productCategoryDb.getId(),
+          productCategoryDb.getName());
+      ProductGetResponseDTO productGetResponseDTO = new ProductGetResponseDTO(product.getId(),
+          product.getName(), productCategoryDTO, product.getPrice(), product.getCondition(),
+          product.getStatus(), product.getDescription(), product.getSeller().getId(),
+          product.getBuyer() != null ? product.getBuyer().getId() : null,
+          product.getColor(), product.getProductionYear(), product.getCreatedAt());
+      productGetResponseDTOList.add(productGetResponseDTO);
+    }
+  }
 
   /**
    * Deletes the given product based on UUID
+   *
    * @param id UUID
    */
   public void deleteProductOrNull(UUID id) {
     Product product = productRepo.findById(id).orElse(null);
     assert product != null;
     productRepo.delete(product);
-  }
-
-  /**
-   * Deletes the given product based on name
-   * @param name product name
-   */
-  @Transactional
-  public void deleteByName(String name) {
-    productRepo.deleteByName(name);
   }
 
   /**
@@ -61,20 +87,9 @@ public class ProductService {
   }
 
   /**
-   * Fetches all products in the database
-   * @return a list of products
-   */
-  public List<Product> findAll() {
-    return productRepo.findAll();
-  }
-
-  public List<Product> findTop20ByOrderByCreatedAtDesc() {
-    return productRepo.findTop20ByOrderByCreatedAtDesc();
-  }
-
-  /**
    * Finds product based on UUID id and seller UUID
-   * @param id UUID of product
+   *
+   * @param id     UUID of product
    * @param seller UUID of product
    * @return a product
    */
