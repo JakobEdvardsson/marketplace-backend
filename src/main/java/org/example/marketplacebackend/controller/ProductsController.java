@@ -1,7 +1,6 @@
 package org.example.marketplacebackend.controller;
 
 
-import com.amazonaws.SdkBaseException;
 import com.amazonaws.SdkClientException;
 import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
@@ -22,9 +21,7 @@ import org.example.marketplacebackend.service.CategoryService;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +45,6 @@ import java.util.UUID;
     "http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
 @Controller
 public class ProductsController {
-
   private final CategoryService categoryService;
   private final ProductService productService;
   private final UserService userService;

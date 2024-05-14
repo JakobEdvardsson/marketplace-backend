@@ -54,7 +54,8 @@ public class SecurityConfig {
             "/v1/orders",
             "/v1/orders/**",
             "/v1/watchlist",
-            "/v1/watchlist/**"
+            "/v1/watchlist/**",
+            "/v1/events"
         )
         .hasRole("USER")
     );

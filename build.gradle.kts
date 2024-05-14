@@ -25,13 +25,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("com.amazonaws:aws-java-sdk-s3:1.12.261") // Use the latest version available
+    implementation("org.springframework.boot:spring-boot-starter-web-mvc")
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.261")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:postgresql")
-    compileOnly("org.projectlombok:lombok")
+    compileOnly("org.project-lombok:lombok")
     runtimeOnly("org.postgresql:postgresql")
-    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.project-lombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 }
