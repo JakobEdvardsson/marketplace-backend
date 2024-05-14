@@ -115,6 +115,8 @@ create table order_item
     constraint order_item_order_history_order_id_fk
       references product_order,
   product_id uuid                           not null
+  constraint order_item_pk_2
+              unique
     constraint order_item_product_id_fk
       references product,
   id         uuid default gen_random_uuid() not null

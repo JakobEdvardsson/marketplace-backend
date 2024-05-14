@@ -1,6 +1,7 @@
 package org.example.marketplacebackend.service;
 
 import jakarta.annotation.Nullable;
+import java.util.Optional;
 import org.example.marketplacebackend.DTO.incoming.OrderItemDTO;
 import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderItemRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
@@ -89,5 +90,13 @@ public class ProductOrderService {
 
   public ProductOrder getProductOrderByBuyerIdAndId(UUID buyerId, UUID id) {
     return orderHistoryRepo.getProductOrderByBuyer_IdAndId(buyerId, id).orElse(null);
+  }
+
+  public Optional<OrderItem> getOrderForProduct(Product product) {
+    return orderItemRepo.findByProduct(product);
+  }
+
+  public void deleteOrderItem(OrderItem orderItem) {
+    orderItemRepo.delete(orderItem);
   }
 }

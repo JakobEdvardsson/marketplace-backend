@@ -37,12 +37,12 @@ public class SecurityConfig {
             "/v1/accounts/login",
             "/v1/accounts/logout",
             "/v1/accounts/register",
+            "/v1/accounts/*",
+            "/v1/accounts/password",
             "/images/**",
             "/v1/categories",
             "/v1/products",
             "/v1/products/**"
-
-
         )
         .permitAll()
         //require auth to access these endpoints
@@ -95,6 +95,7 @@ public class SecurityConfig {
     withCreds.setAllowedOrigins(List.of("http://localhost:3000","https://marketplace.johros.dev"));
     withCreds.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     withCreds.setAllowCredentials(true);
+    withCreds.setAllowedHeaders(List.of("Content-Type"));
 
     UrlBasedCorsConfigurationSource config = new UrlBasedCorsConfigurationSource();
     config.registerCorsConfiguration("/**", withCreds);
