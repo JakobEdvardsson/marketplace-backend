@@ -118,6 +118,7 @@ public class ProductsController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
+  // TODO: Use product DTO here instead of Product model
   @GetMapping("")
   public ResponseEntity<?> getProducts(
       @RequestParam(name = "category", required = false) String category) {
