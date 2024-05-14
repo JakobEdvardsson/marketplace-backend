@@ -29,7 +29,7 @@ public class AccountsController {
   }
 
   @PostMapping("/password")
-  public ResponseEntity<String> changeUserPassword(Principal principal, @RequestBody PasswordChangeDTO passwordChangeDTO) {
+  public ResponseEntity<?> changeUserPassword(Principal principal, @RequestBody PasswordChangeDTO passwordChangeDTO) {
     Account authenticatedUser = userService.getAccountOrException(principal.getName());
 
     boolean successful = userService.passwordChange(authenticatedUser, passwordChangeDTO.oldPassword(), passwordChangeDTO.newPassword());
