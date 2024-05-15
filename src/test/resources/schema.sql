@@ -149,17 +149,31 @@ create index watchlist_product_category_id_index
 create index watchlist_subscriber_id_index
   on watchlist (subscriber_id);
 
+create table message_queue
+(
+    subscriber_id uuid                           not null
+        constraint message_queue_account_id_fk
+            references account,
+    product_id    uuid                           not null
+        constraint message_queue_product_id_fk
+            references product,
+    id            uuid default gen_random_uuid() not null
+        constraint message_queue_pk
+            primary key
+);
+
+create index message_queue_subscriber_id_index
+    on message_queue (subscriber_id);
+
 create function transfer_relations_before_delete() returns trigger
   language plpgsql
 as
 $$
 BEGIN
   -- This logic will be executed before the DELETE operation
-  UPDATE product
-  SET seller = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
+    UPDATE product SET seller = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
   WHERE seller = OLD.id;
-  UPDATE product
-  SET buyer = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
+    UPDATE product SET buyer = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
   WHERE buyer = OLD.id;
   RETURN OLD;
 END;
@@ -176,7 +190,7 @@ create function check_if_product_is_purchasable() returns trigger
 as
 $$
 BEGIN
-  IF OLD.buyer IS NOT NULL AND NEW.buyer != 'dc254b85-6610-43c9-9f48-77a80b798158' THEN
+   IF OLD.buyer IS NOT NULL AND NEW.buyer != 'dc254b85-6610-43c9-9f48-77a80b798158' AND OLD.status = 2 THEN
     RAISE EXCEPTION 'Product is already purchased!';
   END IF;
   RETURN NEW;

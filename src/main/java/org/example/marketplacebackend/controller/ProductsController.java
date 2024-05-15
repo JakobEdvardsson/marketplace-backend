@@ -1,8 +1,11 @@
 package org.example.marketplacebackend.controller;
 
-
-import com.amazonaws.SdkBaseException;
 import com.amazonaws.SdkClientException;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProfileResponseDTO;
@@ -15,16 +18,14 @@ import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetRespons
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
-import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.model.ProductCategory;
+import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.service.CategoryService;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,12 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 
 @RequestMapping("v1/products")
 @CrossOrigin(origins = {
@@ -54,14 +49,17 @@ public class ProductsController {
   private final ProductService productService;
   private final UserService userService;
   private final ProductImageService productImageService;
+  private final SSEController sseController;
 
   public ProductsController(CategoryService categoryService,
       ProductService productService,
-      UserService userService, ProductImageService productImageService) {
+      UserService userService, ProductImageService productImageService,
+      SSEController sseController) {
     this.categoryService = categoryService;
     this.productService = productService;
     this.userService = userService;
     this.productImageService = productImageService;
+    this.sseController = sseController;
   }
 
   @PostMapping("")
@@ -117,6 +115,7 @@ public class ProductsController {
         productDB.getProductionYear() != null ? productDB.getProductionYear() : null
     );
 
+    sseController.pushNewProduct(productDB);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
@@ -135,7 +134,7 @@ public class ProductsController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body("That product category does not exist");
     }
-    
+
     products = productService.getAllByProductCategory(productCategory);
     return ResponseEntity.status(HttpStatus.OK).body(products);
   }
