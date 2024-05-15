@@ -19,33 +19,32 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity
+// @EnableMethodSecurity
 public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.cors(Customizer.withDefaults());
 
-    //TODO: fix later
+    // TODO: fix later
     http.csrf(AbstractHttpConfigurer::disable);
 
     http.authorizeHttpRequests(auth -> auth
-        //allow OPTION requests
+        // allow OPTION requests
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-        //don't require auth for these endpoints
+        // don't require auth for these endpoints
         .requestMatchers(
             "/v1/accounts/login",
             "/v1/accounts/logout",
             "/v1/accounts/register",
             "/v1/accounts/*",
             "/v1/accounts/password",
-            "/images/**",
             "/v1/categories",
             "/v1/products",
             "/v1/products/**"
         )
         .permitAll()
-        //require auth to access these endpoints
+        // require auth to access these endpoints
         .requestMatchers(
             "/v1/inbox",
             "/v1/inbox/*",
@@ -55,7 +54,8 @@ public class SecurityConfig {
             "/v1/orders/**",
             "/v1/watchlist",
             "/v1/watchlist/**",
-            "/v1/sse/listen"
+            "/v1/sse/listen",
+            "/v1/me"
         )
         .hasRole("USER")
     );
@@ -92,7 +92,7 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration withCreds = new CorsConfiguration();
-    withCreds.setAllowedOrigins(List.of("http://localhost:3000","https://marketplace.johros.dev"));
+    withCreds.setAllowedOrigins(List.of("http://localhost:3000", "https://marketplace.johros.dev"));
     withCreds.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     withCreds.setAllowCredentials(true);
     withCreds.setAllowedHeaders(List.of("Content-Type"));
