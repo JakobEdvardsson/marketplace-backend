@@ -65,6 +65,7 @@ public class ProductImageService {
     ObjectMetadata metaData = new ObjectMetadata();
     metaData.setContentType(file.getContentType());
     metaData.setContentDisposition(fileNameRandomized);
+    metaData.setContentLength(file.getSize());
 
     PutObjectRequest putObjectRequest = new PutObjectRequest("blocket-clone", fileNameRandomized,
         file.getInputStream(), metaData)
