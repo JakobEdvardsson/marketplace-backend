@@ -5,7 +5,9 @@ import java.util.UUID;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.model.Watchlist;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface WatchListRepository extends JpaRepository<Watchlist, UUID> {
 
@@ -14,4 +16,7 @@ public interface WatchListRepository extends JpaRepository<Watchlist, UUID> {
   long deleteBySubscriberAndProductCategory(Account subscriber, ProductCategory productCategoryID);
 
   boolean existsBySubscriberAndProductCategoryId(Account subscriber, UUID productCategoryID);
+
+  @Query("SELECT w.subscriber.id FROM Watchlist w WHERE w.productCategory = :category")
+  List<String> findByProductCategory(ProductCategory category);
 }
