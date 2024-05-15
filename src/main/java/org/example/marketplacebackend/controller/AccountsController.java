@@ -2,6 +2,7 @@ package org.example.marketplacebackend.controller;
 
 import org.example.marketplacebackend.DTO.incoming.PasswordChangeDTO;
 import org.example.marketplacebackend.DTO.incoming.UserDTO;
+import org.example.marketplacebackend.DTO.outgoing.MyProfileResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.ProfileResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.UserRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
@@ -72,6 +73,16 @@ public class AccountsController {
 
     ProfileResponseDTO response = new ProfileResponseDTO(user.getFirstName(), user.getLastName(),
         user.getUsername());
+
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<?> getMyProfile(Principal principal) {
+    Account authenticatedUser = userService.getAccountOrException(principal.getName());
+    MyProfileResponseDTO response = new MyProfileResponseDTO(authenticatedUser.getFirstName(),
+        authenticatedUser.getLastName(), authenticatedUser.getDateOfBirth(),
+        authenticatedUser.getUsername(), authenticatedUser.getEmail());
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
