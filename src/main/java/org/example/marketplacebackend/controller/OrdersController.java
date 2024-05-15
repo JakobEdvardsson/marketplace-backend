@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,11 +72,17 @@ public class OrdersController {
   }
 
   @GetMapping("")
-  public ResponseEntity<?> getAllBuyOrders(Principal principal) {
+  public ResponseEntity<?> getAllBuyOrders(Principal principal, @RequestParam Instant start, @RequestParam Instant end) {
     String username = principal.getName();
     Account authenticatedUser = userService.getAccountOrException(username);
+    UUID buyerId = authenticatedUser.getId();
+    List<ProductOrder> orders;
 
-    List<ProductOrder> orders = productOrderService.getAllOrders(authenticatedUser.getId());
+    if (start == null || end == null) {
+      orders = productOrderService.getAllOrders(buyerId);
+    } else {
+      orders = productOrderService.getAllOrdersByPeriod(buyerId, start, end);
+    }
 
     if (orders.isEmpty()) {
       return ResponseEntity.status(HttpStatus.OK).build();

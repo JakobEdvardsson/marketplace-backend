@@ -1,6 +1,7 @@
 package org.example.marketplacebackend.service;
 
 import jakarta.annotation.Nullable;
+import java.time.Instant;
 import java.util.Optional;
 import org.example.marketplacebackend.DTO.incoming.OrderItemDTO;
 import org.example.marketplacebackend.DTO.outgoing.orderDTOs.OrderItemRegisteredResponseDTO;
@@ -86,6 +87,10 @@ public class ProductOrderService {
 
   public List<ProductOrder> getAllOrders(UUID buyerId) {
     return orderHistoryRepo.findAllByBuyer_Id(buyerId);
+  }
+
+  public List<ProductOrder> getAllOrdersByPeriod(UUID buyerId, Instant start, Instant end) {
+    return orderHistoryRepo.findAllOrdersByPeriod(buyerId, start, end);
   }
 
   public ProductOrder getProductOrderByBuyerIdAndId(UUID buyerId, UUID id) {
