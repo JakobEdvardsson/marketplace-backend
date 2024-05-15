@@ -84,6 +84,10 @@ public class ProductImageService {
     List<ProductImage> uploadedImages = new ArrayList<>();
 
     for (MultipartFile image : images) {
+      if (image.isEmpty()) {
+        continue;
+      }
+
       ProductImage uploadedImage = saveAttachment(productId, image);
       uploadedImages.add(uploadedImage);
     }
