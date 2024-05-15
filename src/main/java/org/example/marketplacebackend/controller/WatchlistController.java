@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RequestMapping("/v1/watchlist")
 @CrossOrigin(origins = {
     "http://localhost:3000, https://marketplace.johros.dev"}, allowCredentials = "true")
 @RestController
 public class WatchlistController {
-
   private final UserService userService;
   private final WatchListRepository watchListRepository;
   private final ProductCategoryRepository productCategoryRepository;
