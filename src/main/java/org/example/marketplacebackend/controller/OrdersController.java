@@ -15,6 +15,8 @@ import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.service.ProductOrderService;
 import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,8 +30,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 @RequestMapping("v1/orders")
@@ -72,7 +78,8 @@ public class OrdersController {
   }
 
   @GetMapping("")
-  public ResponseEntity<?> getAllBuyOrders(Principal principal, @RequestParam Instant start, @RequestParam Instant end) {
+  public ResponseEntity<?> getBuyOrders(Principal principal,
+      @RequestParam(required = false) Instant start, @RequestParam(required = false) Instant end) {
     String username = principal.getName();
     Account authenticatedUser = userService.getAccountOrException(username);
     UUID buyerId = authenticatedUser.getId();
@@ -137,7 +144,8 @@ public class OrdersController {
       return ResponseEntity.status(HttpStatus.OK).body(response);
 
     } else {
-      productOrderService.getOrderForProduct(product).ifPresent(productOrderService::deleteOrderItem);
+      productOrderService.getOrderForProduct(product)
+          .ifPresent(productOrderService::deleteOrderItem);
 
       product.setStatus(ProductStatus.AVAILABLE.ordinal());
       product.setBuyer(null);
