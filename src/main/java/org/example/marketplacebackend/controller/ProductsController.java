@@ -121,11 +121,24 @@ public class ProductsController {
 
   @GetMapping("")
   public ResponseEntity<?> getProducts(
-      @RequestParam(name = "category", required = false) String category) {
+      @RequestParam(name = "category", required = false) String category,
+      @RequestParam(name = "min", required = false) Integer min,
+      @RequestParam(name = "max", required = false) Integer max,
+      @RequestParam(name = "condition", required = false) Integer condition) {
     ProductGetAllResponseDTO products;
 
-    if (category == null) {
+    if (category == null && min == null && max == null && condition == null) {
       products = productService.findTop20ByOrderByCreatedAtDesc();
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    if (min != null && max != null && category != null) {
+      products = productService.getAllByProductPriceAndCategory(category, min, max);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    if (min != null && max != null) {
+      products = productService.getAllByProductPrice(min, max);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 

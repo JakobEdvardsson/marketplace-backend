@@ -12,13 +12,21 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
-  void deleteByName(String name);
-
   List<Product> getAllByProductCategory(ProductCategory categoryId);
 
   Optional<Product> findProductByIdAndSeller(UUID id, Account seller);
 
   List<Product> findTop20ByOrderByCreatedAtDesc();
+
+  @Query("""
+      SELECT p FROM Product p WHERE p.price BETWEEN :min AND :max
+      """)
+  List<Product> getProductsByPrice(Integer min, Integer max);
+
+  @Query("""
+      SELECT p FROM Product p WHERE p.price BETWEEN :min AND :max AND p.productCategory.name = :category
+      """)
+  List<Product> getProductsByPriceAndCategory(String category, Integer min, Integer max);
 
   @Query("""
       SELECT p FROM Product p WHERE p.seller = :seller AND p.status IN (0, 1)

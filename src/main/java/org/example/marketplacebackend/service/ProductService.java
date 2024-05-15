@@ -30,6 +30,26 @@ public class ProductService {
     return productRepo.findById(id).orElse(null);
   }
 
+  public ProductGetAllResponseDTO getAllByProductPrice(Integer min, Integer max) {
+    List<Product> products = productRepo.getProductsByPrice(min, max);
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
+  public ProductGetAllResponseDTO getAllByProductPriceAndCategory(String category, Integer min, Integer max) {
+    List<Product> products = productRepo.getProductsByPriceAndCategory(category, min, max);
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
   public ProductGetAllResponseDTO getAllByProductCategory(ProductCategory category) {
     List<Product> products = productRepo.getAllByProductCategory(category);
     List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
