@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.repository.ProductImageRepository;
@@ -21,7 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import javax.imageio.ImageIO;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +63,14 @@ public class ProductImageService {
     }
     if (file.getBytes().length > (1024 * 1024)) {
       throw new MaxUploadSizeExceededException(file.getSize());
+    }
+
+    try (InputStream input = file.getInputStream()) {
+      try {
+        ImageIO.read(input);
+      } catch (Exception e) {
+        throw new FileNotFoundException("Nice try");
+      }
     }
 
     String fileNameRandomized = UUID.randomUUID() + "_" + file.getOriginalFilename();
