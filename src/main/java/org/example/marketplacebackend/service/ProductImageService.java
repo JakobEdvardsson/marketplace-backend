@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,7 +68,10 @@ public class ProductImageService {
 
     try (InputStream input = file.getInputStream()) {
       try {
-        ImageIO.read(input);
+        BufferedImage image = ImageIO.read(input);
+        if (image == null) {
+          throw new FileNotFoundException("Nice try");
+        }
       } catch (Exception e) {
         throw new FileNotFoundException("Nice try");
       }
