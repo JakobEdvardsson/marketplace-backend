@@ -17,9 +17,11 @@ import java.util.UUID;
 public class ProductService {
 
   private final ProductRepository productRepo;
+  private final ProductImageService productImageService;
 
-  public ProductService(ProductRepository productRepo) {
+  public ProductService(ProductRepository productRepo, ProductImageService productImageService) {
     this.productRepo = productRepo;
+    this.productImageService = productImageService;
   }
 
   /**
@@ -352,7 +354,9 @@ public class ProductService {
           product.getName(), productCategoryDTO, product.getPrice(), product.getCondition(),
           product.getStatus(), product.getDescription(), product.getSeller().getId(),
           product.getBuyer() != null ? product.getBuyer().getId() : null,
-          product.getColor(), product.getProductionYear(), product.getCreatedAt());
+          product.getColor(), product.getProductionYear(), product.getCreatedAt(),
+          productImageService.productImagesToImageUrls(product.getProductImages())
+          );
       productGetResponseDTOList.add(productGetResponseDTO);
     }
   }
