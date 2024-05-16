@@ -152,7 +152,8 @@ public class ProductsController {
     }
 
     // category + price + sort
-    if (minPrice != null && maxPrice != null && category != null && sort != null) {
+    if (minPrice != null && maxPrice != null && category != null && sort != null
+        && condition == null) {
       if (minPrice > maxPrice) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
@@ -161,8 +162,25 @@ public class ProductsController {
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
+    // minPrice + condition + sort
+    if (minPrice != null && condition != null && sort != null && category == null
+        && maxPrice == null) {
+      products = productService.getAllByProductMinPriceAndConditionAndSort(minPrice, condition,
+          sort);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    // maxPrice + condition + sort
+    if (maxPrice != null && condition != null && sort != null && category == null
+        && minPrice == null) {
+      products = productService.getAllByProductMaxPriceAndConditionAndSort(maxPrice, condition,
+          sort);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
     // category + price
-    if (minPrice != null && maxPrice != null && category != null) {
+    if (minPrice != null && maxPrice != null && category != null && condition == null
+        && sort == null) {
       if (minPrice > maxPrice) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
@@ -171,21 +189,22 @@ public class ProductsController {
     }
 
     // condition + category + sort
-    if (condition != null && category != null && minPrice == null && maxPrice == null
-        && sort != null) {
+    if (condition != null && category != null && sort != null && maxPrice == null
+        && minPrice == null) {
       products = productService.getAllByConditionAndCategoryAndSort(condition, category, sort);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     // condition + category
-    if (condition != null && category != null && minPrice == null && maxPrice == null) {
+    if (condition != null && category != null && minPrice == null && maxPrice == null
+        && sort == null) {
       products = productService.getAllByConditionAndCategory(condition, category);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     // condition + price + sort
-    if (condition != null && category == null && minPrice != null && maxPrice != null
-        && sort != null) {
+    if (condition != null && minPrice != null && maxPrice != null && sort != null
+        && category == null) {
       if (minPrice > maxPrice) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
@@ -195,7 +214,8 @@ public class ProductsController {
     }
 
     // condition + price
-    if (condition != null && category == null && minPrice != null && maxPrice != null) {
+    if (condition != null && minPrice != null && maxPrice != null && category == null
+        && sort == null) {
       if (minPrice > maxPrice) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
@@ -204,33 +224,45 @@ public class ProductsController {
     }
 
     // condition + sort
-    if (condition != null && category == null && minPrice == null && maxPrice == null
-        && sort != null) {
+    if (condition != null && sort != null && category == null && minPrice == null
+        && maxPrice == null
+    ) {
       products = productService.getAllByConditionAndSort(condition, sort);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
+
     // condition
-    if (condition != null && category == null && minPrice == null && maxPrice == null) {
+    if (condition != null && category == null && minPrice == null && maxPrice == null
+        && sort == null) {
       products = productService.getAllByCondition(condition);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
-    // sort
-    if (sort != null)
-
     // min price
-    {
-      if (minPrice != null && maxPrice == null && category == null && condition == null
-          && sort == null) {
-        products = productService.getAllByMinPrice(minPrice);
-        return ResponseEntity.status(HttpStatus.OK).body(products);
-      }
+    if (minPrice != null && maxPrice == null && category == null && condition == null
+        && sort == null) {
+      products = productService.getAllByMinPrice(minPrice);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     // min price + sort
-    if (minPrice != null && maxPrice == null && category == null && condition == null
-        && sort != null) {
+    if (minPrice != null && sort != null && category == null && condition == null
+        && maxPrice == null) {
       products = productService.getAllByMinPriceAndSort(minPrice, sort);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    // minPrice + condition
+    if (minPrice != null && condition != null && maxPrice == null && category == null
+        && sort == null) {
+      products = productService.getAllByProductMinPriceAndCondition(minPrice, condition);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    // maxPrice + condition
+    if (maxPrice != null && condition != null && minPrice == null && category == null
+        && sort == null) {
+      products = productService.getAllByProductMaxPriceAndCondition(maxPrice, condition);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
@@ -242,14 +274,16 @@ public class ProductsController {
     }
 
     // max price + sort
-    if (maxPrice != null && minPrice == null && category == null && condition == null
-        && sort != null) {
+    if (maxPrice != null && sort != null && minPrice == null && category == null
+        && condition == null
+    ) {
       products = productService.getAllByMaxPriceAndSort(maxPrice, sort);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     // price + sort
-    if (minPrice != null && maxPrice != null && sort != null) {
+    if (minPrice != null && maxPrice != null && sort != null && category == null
+        && condition == null) {
       if (minPrice > maxPrice) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
@@ -257,8 +291,16 @@ public class ProductsController {
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
+    // sort
+    if (sort != null && minPrice == null && maxPrice == null && category == null
+        && condition == null) {
+      products = productService.getAllBySort(sort);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
     // price
-    if (minPrice != null && maxPrice != null) {
+    if (minPrice != null && maxPrice != null && condition == null && category == null
+        && sort == null) {
       if (minPrice > maxPrice) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
@@ -273,7 +315,8 @@ public class ProductsController {
     }
 
     // category + sort
-    if (sort != null) {
+    if (sort != null && category != null && condition == null && minPrice == null
+        && maxPrice == null) {
       products = productService.getAllByProductCategoryAndSort(productCategory, sort);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }

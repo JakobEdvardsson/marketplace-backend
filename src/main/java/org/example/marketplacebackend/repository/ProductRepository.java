@@ -162,6 +162,38 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
       """)
   List<Product> getAllByMinPriceAndSortDesc(Integer minPrice);
 
+  @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
+  @Query("""
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.condition = :condition
+      """)
+  List<Product> getAllByMinPriceAndCondition(Integer minPrice, Integer condition);
+  @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
+  @Query("""
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.condition = :condition ORDER BY p.createdAt ASC
+      """)
+  List<Product> getAllByMinPriceAndConditionAndSortAsc(Integer minPrice, Integer condition);
+
+  @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
+  @Query("""
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.condition = :condition ORDER BY p.createdAt DESC
+      """)
+  List<Product> getAllByMinPriceAndConditionAndSortDesc(Integer minPrice, Integer condition);
+  @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
+  @Query("""
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.condition = :condition ORDER BY p.createdAt ASC
+      """)
+  List<Product> getAllByMaxPriceAndConditionAndSortAsc(Integer maxPrice, Integer condition);
+
+  @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
+  @Query("""
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.condition = :condition ORDER BY p.createdAt DESC
+      """)
+  List<Product> getAllByMaxPriceAndConditionAndSortDesc(Integer maxPrice, Integer condition);
+  @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
+  @Query("""
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.condition = :condition
+      """)
+  List<Product> getAllByMaxPriceAndCondition(Integer maxPrice, Integer condition);
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
       SELECT p FROM Product p WHERE p.price <= :maxPrice ORDER BY p.price ASC
@@ -187,5 +219,17 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
       DESC
       """)
   List<Product> getProductsByConditionAndCategoryAndPriceAndDesc(Integer condition, String category, Integer minPrice, Integer maxPrice);
+
+  @EntityGraph(attributePaths = {"productCategory", "productImages"})
+  @Query("""
+      SELECT p FROM Product p ORDER BY p.createdAt ASC
+      """)
+  List<Product> getProductsByAsc();
+
+  @EntityGraph(attributePaths = {"productCategory", "productImages"})
+  @Query("""
+      SELECT p FROM Product p ORDER BY p.createdAt DESC
+      """)
+  List<Product> getProductsByDesc();
 
 }

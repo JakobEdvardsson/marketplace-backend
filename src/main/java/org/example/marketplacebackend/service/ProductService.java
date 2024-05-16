@@ -120,6 +120,21 @@ public class ProductService {
         productGetResponseDTOList);
   }
 
+  public ProductGetAllResponseDTO getAllBySort(Integer sort) {
+    List<Product> products;
+    if (sort == 0) {
+      products = productRepo.getProductsByAsc();
+    } else {
+      products = productRepo.getProductsByDesc();
+    }
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
   public ProductGetAllResponseDTO getAllByConditionAndSort(Integer condition, Integer sort) {
     List<Product> products;
     if (sort == 0) {
@@ -247,6 +262,55 @@ public class ProductService {
     } else {
       products = productRepo.getAllByMinPriceAndSortDesc(minPrice);
     }
+
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+  public ProductGetAllResponseDTO getAllByProductMinPriceAndConditionAndSort(Integer minPrice, Integer condition, Integer sort) {
+    List<Product> products;
+    if (sort == 0) {
+      products = productRepo.getAllByMinPriceAndConditionAndSortAsc(minPrice, condition);
+    } else {
+      products = productRepo.getAllByMinPriceAndConditionAndSortDesc(minPrice, condition);
+    }
+
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
+  public ProductGetAllResponseDTO getAllByProductMaxPriceAndConditionAndSort(Integer maxPrice, Integer condition, Integer sort) {
+    List<Product> products;
+    if (sort == 0) {
+      products = productRepo.getAllByMaxPriceAndConditionAndSortAsc(maxPrice, condition);
+    } else {
+      products = productRepo.getAllByMaxPriceAndConditionAndSortDesc(maxPrice, condition);
+    }
+
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
+  public ProductGetAllResponseDTO getAllByProductMinPriceAndCondition(Integer minPrice, Integer condition) {
+    List<Product> products = productRepo.getAllByMinPriceAndCondition(minPrice, condition);
+
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
+  public ProductGetAllResponseDTO getAllByProductMaxPriceAndCondition(Integer maxPrice, Integer condition) {
+    List<Product> products = productRepo.getAllByMaxPriceAndCondition(maxPrice, condition);
 
     List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
     convertProductsToDTO(products, productGetResponseDTOList);
