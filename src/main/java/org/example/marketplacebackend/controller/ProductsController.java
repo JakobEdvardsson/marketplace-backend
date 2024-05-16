@@ -204,7 +204,8 @@ public class ProductsController {
     }
 
     // condition + sort
-    if (condition != null && category == null && minPrice == null && maxPrice == null && sort != null) {
+    if (condition != null && category == null && minPrice == null && maxPrice == null
+        && sort != null) {
       products = productService.getAllByConditionAndSort(condition, sort);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
@@ -214,11 +215,16 @@ public class ProductsController {
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
+    // sort
+    if (sort != null)
+
     // min price
-    if (minPrice != null && maxPrice == null && category == null && condition == null
-        && sort == null) {
-      products = productService.getAllByMinPrice(minPrice);
-      return ResponseEntity.status(HttpStatus.OK).body(products);
+    {
+      if (minPrice != null && maxPrice == null && category == null && condition == null
+          && sort == null) {
+        products = productService.getAllByMinPrice(minPrice);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
+      }
     }
 
     // min price + sort
@@ -314,7 +320,9 @@ public class ProductsController {
         product.getName(), productCategoryDTO, product.getPrice(), product.getCondition(),
         product.getStatus(), product.getDescription(), product.getSeller().getId(),
         product.getBuyer() != null ? product.getBuyer().getId() : null,
-        product.getColor(), product.getProductionYear(), product.getCreatedAt());
+        product.getColor(), product.getProductionYear(), product.getCreatedAt(),
+        productImageService.productImagesToImageUrls(product.getProductImages())
+    );
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
