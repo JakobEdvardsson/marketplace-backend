@@ -238,16 +238,11 @@ public class ProductsController {
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
-    // sort
-    if (sort != null)
-
     // min price
-    {
-      if (minPrice != null && maxPrice == null && category == null && condition == null
-          && sort == null) {
-        products = productService.getAllByMinPrice(minPrice);
-        return ResponseEntity.status(HttpStatus.OK).body(products);
-      }
+    if (minPrice != null && maxPrice == null && category == null && condition == null
+        && sort == null) {
+      products = productService.getAllByMinPrice(minPrice);
+      return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     // min price + sort
