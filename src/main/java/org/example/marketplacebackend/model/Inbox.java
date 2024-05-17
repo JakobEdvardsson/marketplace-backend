@@ -1,5 +1,6 @@
 package org.example.marketplacebackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +33,7 @@ public class Inbox {
 
   private Boolean isRead;
 
+  @Column(insertable = false)
   private Instant sentAt;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
