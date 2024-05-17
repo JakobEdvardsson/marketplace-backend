@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.example.marketplacebackend.DTO.incoming.ProductDTO;
+import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductDTO;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.MessageQueue;
 import org.example.marketplacebackend.model.Product;
@@ -67,7 +67,7 @@ public class SSEController {
             product.getProductCategory().getId(),
             product.getPrice(), product.getCondition(), product.getDescription(),
             product.getColor(),
-            product.getProductionYear());
+            product.getProductionYear(), product.getId());
         emitter.send(SseEmitter.event().data(productDTO));
         messageQueueService.deleteByProductAndUser(product, user);
       }
@@ -97,7 +97,7 @@ public class SSEController {
   public void pushNewProduct(Product product) {
     ProductDTO productDTO = new ProductDTO(product.getName(), product.getProductCategory().getId(),
         product.getPrice(), product.getCondition(), product.getDescription(), product.getColor(),
-        product.getProductionYear());
+        product.getProductionYear(), product.getId());
 
     List<String> subscriberIds = watchListRepository.findByProductCategory(
         product.getProductCategory());
