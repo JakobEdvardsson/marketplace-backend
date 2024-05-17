@@ -125,12 +125,19 @@ public class ProductsController {
       @RequestParam(name = "minPrice", required = false) Integer minPrice,
       @RequestParam(name = "maxPrice", required = false) Integer maxPrice,
       @RequestParam(name = "condition", required = false) Integer condition,
-      @RequestParam(name = "sort", required = false) Integer sort) {
+      @RequestParam(name = "sort", required = false) Integer sort,
+      @RequestParam(name = "query", required = false) String query
+      ) {
     ProductGetAllResponseDTO products;
     // top 20
     if (category == null && minPrice == null && maxPrice == null && condition == null
-        && sort == null) {
+        && sort == null && query == null) {
       products = productService.findTop20ByOrderByCreatedAtDesc();
+      return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    if (query != null) {
+      products = productService.findBySearchQuery(query);
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
