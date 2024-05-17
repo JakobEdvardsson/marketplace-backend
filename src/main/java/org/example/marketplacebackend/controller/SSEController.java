@@ -67,7 +67,7 @@ public class SSEController {
             product.getProductCategory().getId(),
             product.getPrice(), product.getCondition(), product.getDescription(),
             product.getColor(),
-            product.getProductionYear());
+            product.getProductionYear(), product.getId());
         emitter.send(SseEmitter.event().data(productDTO));
         messageQueueService.deleteByProductAndUser(product, user);
       }
