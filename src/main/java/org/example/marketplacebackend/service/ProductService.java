@@ -344,6 +344,16 @@ public class ProductService {
         productGetResponseDTOList);
   }
 
+  public ProductGetAllResponseDTO findBySearchQuery(String searchQuery) {
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+    List<Product> products = productRepo.findBySearchQuery(searchQuery);
+
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
   private void convertProductsToDTO(List<Product> products,
       List<ProductGetResponseDTO> productGetResponseDTOList) {
     for (Product product : products) {
