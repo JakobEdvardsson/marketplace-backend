@@ -4,6 +4,7 @@ import com.amazonaws.SdkClientException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
@@ -17,11 +18,15 @@ import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetAllResp
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetResponseDTO;
 import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductRegisteredResponseDTO;
 import org.example.marketplacebackend.model.Account;
+import org.example.marketplacebackend.model.Inbox;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.model.ProductStatus;
+import org.example.marketplacebackend.model.Watchlist;
+import org.example.marketplacebackend.repository.WatchListRepository;
 import org.example.marketplacebackend.service.CategoryService;
+import org.example.marketplacebackend.service.InboxService;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.example.marketplacebackend.service.ProductService;
 import org.example.marketplacebackend.service.UserService;
@@ -50,16 +55,21 @@ public class ProductsController {
   private final UserService userService;
   private final ProductImageService productImageService;
   private final SSEController sseController;
+  private final InboxService inboxService;
+  private final WatchListRepository watchListRepository;
 
   public ProductsController(CategoryService categoryService,
       ProductService productService,
       UserService userService, ProductImageService productImageService,
-      SSEController sseController) {
+      SSEController sseController, InboxService inboxService,
+      WatchListRepository watchListRepository) {
     this.categoryService = categoryService;
     this.productService = productService;
     this.userService = userService;
     this.productImageService = productImageService;
     this.sseController = sseController;
+    this.inboxService = inboxService;
+    this.watchListRepository = watchListRepository;
   }
 
   @PostMapping("")
@@ -115,6 +125,21 @@ public class ProductsController {
         productDB.getProductionYear() != null ? productDB.getProductionYear() : null
     );
 
+    List<String> watchLists =  watchListRepository.findByProductCategory(productDB.getProductCategory());
+    List<Inbox> inboxes = new ArrayList<>();
+    for (String watchList : watchLists) {
+      Account account = new Account();
+      account.setId(UUID.fromString(watchList));
+
+      Inbox inbox = new Inbox();
+      inbox.setProduct(productDB);
+      inbox.setMessage("New product added from category: " + productDB.getProductCategory().getName());
+      inbox.setReceiver(account);
+      inbox.setIsRead(false);
+      inboxes.add(inbox);
+    }
+
+    inboxService.saveAll(inboxes);
     sseController.pushNewProduct(productDB);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
