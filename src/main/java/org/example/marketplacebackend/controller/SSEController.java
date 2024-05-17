@@ -67,7 +67,7 @@ public class SSEController {
             product.getProductCategory().getId(),
             product.getPrice(), product.getCondition(), product.getDescription(),
             product.getColor(),
-            product.getProductionYear(), product.getId());
+            product.getProductionYear());
         emitter.send(SseEmitter.event().data(productDTO));
         messageQueueService.deleteByProductAndUser(product, user);
       }
@@ -97,7 +97,7 @@ public class SSEController {
   public void pushNewProduct(Product product) {
     ProductDTO productDTO = new ProductDTO(product.getName(), product.getProductCategory().getId(),
         product.getPrice(), product.getCondition(), product.getDescription(), product.getColor(),
-        product.getProductionYear(), product.getId());
+        product.getProductionYear());
 
     List<String> subscriberIds = watchListRepository.findByProductCategory(
         product.getProductCategory());

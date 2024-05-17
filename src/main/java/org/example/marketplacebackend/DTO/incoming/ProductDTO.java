@@ -12,10 +12,9 @@ import java.util.UUID;
  * @param description
  * @param color          [OPTIONAL]
  * @param productionYear [OPTIONAL]
- * @param productId
  */
 public record ProductDTO(String name, UUID productCategory, int price, int condition,
                          String description, Integer color,
-                         Integer productionYear, UUID productId) {
+                         Integer productionYear) {
 
 }
