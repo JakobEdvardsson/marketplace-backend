@@ -234,8 +234,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-    SELECT p FROM Product p WHERE lower(p.name) ILIKE lower(concat('%', :searchQuery, '%'))
-""")
+      SELECT p FROM Product p WHERE lower(p.name) LIKE lower(concat('%', :searchQuery, '%'))
+      """)
   List<Product> findBySearchQuery(String searchQuery);
 
 }
