@@ -148,7 +148,7 @@ public class InboxEndpointsTests {
         .build();
 
     ResultActions getMessage = mockMvc.perform(
-        MockMvcRequestBuilders.get("/v1/inbox/d24b4a00-22f1-4ef2-a081-2c9b95f76156")
+        MockMvcRequestBuilders.get("/v1/inbox/e8fc64de-5a16-4b76-bac0-cf4a20052589")
             .principal(() -> "usernameInbox"));
     getMessage
         .andExpect(status().isOk())

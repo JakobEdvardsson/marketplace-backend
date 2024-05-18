@@ -263,7 +263,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.productCategory.id in (:categories)
+      SELECT p FROM Product p WHERE p.productCategory.id in (:categories) ORDER BY p.createdAt DESC
       """)
   List<Product> getAllProductsByProvidedCategories(List<UUID> categories);
 }
