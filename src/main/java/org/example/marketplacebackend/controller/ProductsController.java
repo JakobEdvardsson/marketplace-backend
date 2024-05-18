@@ -78,6 +78,10 @@ public class ProductsController {
       @RequestParam(value = "data") MultipartFile[] files
   ) throws Exception {
 
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     String username = principal.getName();
     Account authenticatedUser = userService.getAccountOrException(username);
 
@@ -157,7 +161,7 @@ public class ProductsController {
     // top 20
     if (category == null && minPrice == null && maxPrice == null && condition == null
         && sort == null && query == null) {
-      products = productService.findTop20ByOrderByCreatedAtDesc();
+      products = productService.findTop40ByOrderByCreatedAtDesc();
       return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
@@ -360,6 +364,10 @@ public class ProductsController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteProduct(Principal principal, @PathVariable UUID id) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     Account authenticatedUser = userService.getAccountOrException(principal.getName());
 
     Product product = productService.findProductByIdAndSeller(id,
@@ -402,8 +410,29 @@ public class ProductsController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
+  @GetMapping("/my-subscribed-categories")
+  public ResponseEntity<?> getMySubscribedCategories(Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    Account authenticatedUser = userService.getAccountOrException(principal.getName());
+    List<Watchlist> watchlists = watchListRepository.findAllBySubscriber(authenticatedUser);
+    List<UUID> categories = new ArrayList<>();
+    for (Watchlist watchlist: watchlists) {
+      categories.add(watchlist.getProductCategory().getId());
+    }
+
+    ProductGetAllResponseDTO response = productService.getAllProductsByProvidedCategories(categories);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
   @GetMapping("/my-active-listings")
   public ResponseEntity<?> getMyListings(Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     Account authenticatedUser = userService.getAccountOrException(principal.getName());
 
     List<Product> activeListings = productService.getActiveListings(authenticatedUser);
@@ -433,6 +462,10 @@ public class ProductsController {
 
   @GetMapping("/my-sold-products")
   public ResponseEntity<?> getAllSoldProducts(Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     String username = principal.getName();
 
     Account authenticatedUser = userService.getAccountOrException(username);

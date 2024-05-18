@@ -42,6 +42,16 @@ public class ProductService {
         productGetResponseDTOList);
   }
 
+  public ProductGetAllResponseDTO getAllProductsByProvidedCategories(List<UUID> categories) {
+    List<Product> products = productRepo.getAllProductsByProvidedCategories(categories);
+    List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
+
+    convertProductsToDTO(products, productGetResponseDTOList);
+
+    return new ProductGetAllResponseDTO(
+        productGetResponseDTOList);
+  }
+
   public ProductGetAllResponseDTO getAllByProductPriceAndSort(Integer minPrice, Integer maxPrice,
       Integer sort) {
     List<Product> products;
@@ -334,9 +344,10 @@ public class ProductService {
         productGetResponseDTOList);
   }
 
-  public ProductGetAllResponseDTO findTop20ByOrderByCreatedAtDesc() {
+  public ProductGetAllResponseDTO findTop40ByOrderByCreatedAtDesc() {
     List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
-    List<Product> products = productRepo.findTop20ByOrderByCreatedAtDesc();
+    List<UUID> productIds = productRepo.findIdTop40ByOrderByCreatedAtDesc();
+    List<Product> products = productRepo.findTop40Products(productIds);
 
     convertProductsToDTO(products, productGetResponseDTOList);
 

@@ -38,7 +38,6 @@ public class SecurityConfig {
             "/v1/accounts/logout",
             "/v1/accounts/register",
             "/v1/accounts/*",
-            "/v1/accounts/password",
             "/v1/categories",
             "/v1/products",
             "/v1/products/**"
@@ -49,13 +48,14 @@ public class SecurityConfig {
             "/v1/inbox",
             "/v1/inbox/*",
             "/v1/accounts",
+            "/v1/accounts/password",
+            "/v1/accounts/me",
             "/v1/tests/username",
             "/v1/orders",
             "/v1/orders/**",
             "/v1/watchlist",
             "/v1/watchlist/**",
-            "/v1/sse/listen",
-            "/v1/me"
+            "/v1/sse/listen"
         )
         .hasRole("USER")
     );
