@@ -105,6 +105,8 @@ public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) 
     return ResponseEntity.status(HttpStatus.OK).body(messages);
   }
 
+  // TODO: MAKE getMessageById into a POST where you setIsRead!
+
   //GET - retrieve a specific message in Inbox based on ID
   @GetMapping("/{id}")
   public ResponseEntity<?> getMessageById(
@@ -116,7 +118,7 @@ public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) 
     );
 
     //Searches for message with ID which also match the receiver
-    Optional<Inbox> inbox = inboxRepository.findByIdAndReceiver(
+    Optional<Inbox> inbox = inboxRepository.findByProductIdAndReceiver(
         id,
         authenticatedUser
     );
