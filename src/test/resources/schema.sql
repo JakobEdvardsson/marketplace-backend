@@ -15,22 +15,6 @@ create table account
       unique
 );
 
-create table inbox
-(
-  receiver_id uuid                                               not null
-    constraint inbox_receiver_fk
-      references account,
-  message     text                                               not null,
-  is_read     boolean                                            not null,
-  id          uuid                     default gen_random_uuid() not null
-    constraint inbox_pk
-      primary key,
-  sent_at     timestamp with time zone default now()             not null
-);
-
-create index inbox_receiver_id_index
-  on inbox (receiver_id);
-
 create table product_category
 (
   id   uuid default gen_random_uuid() not null
@@ -84,6 +68,25 @@ create index product_product_category_index
 create index product_is_purchased_index
   on product (status);
 
+create table inbox
+(
+  receiver_id uuid                                               not null
+    constraint inbox_receiver_fk
+      references account,
+  message     text                                               not null,
+  is_read     boolean                                            not null,
+  id          uuid                     default gen_random_uuid() not null
+    constraint inbox_pk
+      primary key,
+  sent_at     timestamp with time zone default now()             not null,
+  product_id  uuid                                               not null
+    constraint inbox_product_id_fk
+      references product
+);
+
+create index inbox_receiver_id_index
+  on inbox (receiver_id);
+
 create table product_image
 (
   product_id uuid                           not null
@@ -115,8 +118,8 @@ create table order_item
     constraint order_item_order_history_order_id_fk
       references product_order,
   product_id uuid                           not null
-  constraint order_item_pk_2
-              unique
+    constraint order_item_pk_2
+      unique
     constraint order_item_product_id_fk
       references product,
   id         uuid default gen_random_uuid() not null
@@ -151,19 +154,20 @@ create index watchlist_subscriber_id_index
 
 create table message_queue
 (
-    subscriber_id uuid                           not null
-        constraint message_queue_account_id_fk
-            references account,
-    product_id    uuid                           not null
-        constraint message_queue_product_id_fk
-            references product,
-    id            uuid default gen_random_uuid() not null
-        constraint message_queue_pk
-            primary key
+  subscriber_id uuid                           not null
+    constraint message_queue_account_id_fk
+      references account,
+  product_id    uuid                           not null
+    constraint message_queue_product_id_fk
+      references product
+      on delete cascade,
+  id            uuid default gen_random_uuid() not null
+    constraint message_queue_pk
+      primary key
 );
 
 create index message_queue_subscriber_id_index
-    on message_queue (subscriber_id);
+  on message_queue (subscriber_id);
 
 create function transfer_relations_before_delete() returns trigger
   language plpgsql
@@ -171,9 +175,9 @@ as
 $$
 BEGIN
   -- This logic will be executed before the DELETE operation
-    UPDATE product SET seller = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
+  UPDATE product SET seller = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
   WHERE seller = OLD.id;
-    UPDATE product SET buyer = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
+  UPDATE product SET buyer = uuid 'dc254b85-6610-43c9-9f48-77a80b798158'
   WHERE buyer = OLD.id;
   RETURN OLD;
 END;
@@ -190,7 +194,7 @@ create function check_if_product_is_purchasable() returns trigger
 as
 $$
 BEGIN
-   IF OLD.buyer IS NOT NULL AND NEW.buyer != 'dc254b85-6610-43c9-9f48-77a80b798158' AND OLD.status = 2 THEN
+  IF OLD.buyer IS NOT NULL AND NEW.buyer != 'dc254b85-6610-43c9-9f48-77a80b798158' AND OLD.status = 2 THEN
     RAISE EXCEPTION 'Product is already purchased!';
   END IF;
   RETURN NEW;
@@ -203,6 +207,7 @@ create trigger before_update_buyer
   on product
   for each row
 execute procedure check_if_product_is_purchasable();
+
 
 -- placeholder user, used instead of deleted accounts
 INSERT INTO public.account (id, first_name, last_name, date_of_birth, email, password, username)

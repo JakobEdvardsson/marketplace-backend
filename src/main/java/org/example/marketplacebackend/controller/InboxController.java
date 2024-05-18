@@ -92,7 +92,8 @@ public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) 
                     inboxEntry.getId(),
                     inboxEntry.getMessage(),
                     inboxEntry.getIsRead(),
-                    inboxEntry.getSentAt()
+                    inboxEntry.getSentAt(),
+                    inboxEntry.getProduct().getId()
                 )
         )
         .toList();
@@ -128,7 +129,8 @@ public ResponseEntity<?> sendMessage(@RequestBody Account user, String message) 
         message.getId(),
         message.getMessage(),
         message.getIsRead(),
-        message.getSentAt()
+        message.getSentAt(),
+        message.getProduct().getId()
     );
 
     message.setIsRead(true);

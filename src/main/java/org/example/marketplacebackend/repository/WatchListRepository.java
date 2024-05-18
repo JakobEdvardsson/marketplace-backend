@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.model.Watchlist;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
