@@ -80,7 +80,7 @@ public class AccountsController {
   @GetMapping("/me")
   public ResponseEntity<?> getMyProfile(Principal principal) {
     if (principal == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     Account authenticatedUser = userService.getAccountOrException(principal.getName());
