@@ -190,8 +190,8 @@ public class ProductEndpointsTests {
           """)
   @Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
       statements = """
-          DELETE FROM product_category;
           DELETE FROM product;
+          DELETE FROM product_category;
           DELETE FROM account;
           """)
   public void deleteProductSuccess() throws Exception {
