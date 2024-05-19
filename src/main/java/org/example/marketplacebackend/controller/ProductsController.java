@@ -384,7 +384,7 @@ public class ProductsController {
       }
     }
 
-    productService.deleteProductOrNull(id);
+    productService.setStatusSoldAndBuyerToDeleted(id);
     return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully");
   }
 

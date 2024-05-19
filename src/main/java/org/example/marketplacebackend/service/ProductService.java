@@ -6,6 +6,7 @@ import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetRespons
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductCategory;
+import org.example.marketplacebackend.repository.AccountRepository;
 import org.example.marketplacebackend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +19,13 @@ public class ProductService {
 
   private final ProductRepository productRepo;
   private final ProductImageService productImageService;
+  private final AccountRepository accountRepo;
 
-  public ProductService(ProductRepository productRepo, ProductImageService productImageService) {
+  public ProductService(ProductRepository productRepo, ProductImageService productImageService,
+      AccountRepository accountRepo) {
     this.productRepo = productRepo;
     this.productImageService = productImageService;
+    this.accountRepo = accountRepo;
   }
 
   /**
@@ -30,6 +34,13 @@ public class ProductService {
    */
   public Product getProductOrNull(UUID id) {
     return productRepo.findById(id).orElse(null);
+  }
+
+  public void setStatusSoldAndBuyerToDeleted(UUID id) {
+    Account deleted = accountRepo.findByUsername("deleted").orElse(null);
+    assert deleted != null;
+    System.out.println(deleted.getId());
+    productRepo.updateProductByStatusAndBuyer(id, deleted);
   }
 
   public ProductGetAllResponseDTO getAllByProductPrice(Integer minPrice, Integer maxPrice) {
@@ -279,7 +290,9 @@ public class ProductService {
     return new ProductGetAllResponseDTO(
         productGetResponseDTOList);
   }
-  public ProductGetAllResponseDTO getAllByProductMinPriceAndConditionAndSort(Integer minPrice, Integer condition, Integer sort) {
+
+  public ProductGetAllResponseDTO getAllByProductMinPriceAndConditionAndSort(Integer minPrice,
+      Integer condition, Integer sort) {
     List<Product> products;
     if (sort == 0) {
       products = productRepo.getAllByMinPriceAndConditionAndSortAsc(minPrice, condition);
@@ -294,7 +307,8 @@ public class ProductService {
         productGetResponseDTOList);
   }
 
-  public ProductGetAllResponseDTO getAllByProductMaxPriceAndConditionAndSort(Integer maxPrice, Integer condition, Integer sort) {
+  public ProductGetAllResponseDTO getAllByProductMaxPriceAndConditionAndSort(Integer maxPrice,
+      Integer condition, Integer sort) {
     List<Product> products;
     if (sort == 0) {
       products = productRepo.getAllByMaxPriceAndConditionAndSortAsc(maxPrice, condition);
@@ -309,7 +323,8 @@ public class ProductService {
         productGetResponseDTOList);
   }
 
-  public ProductGetAllResponseDTO getAllByProductMinPriceAndCondition(Integer minPrice, Integer condition) {
+  public ProductGetAllResponseDTO getAllByProductMinPriceAndCondition(Integer minPrice,
+      Integer condition) {
     List<Product> products = productRepo.getAllByMinPriceAndCondition(minPrice, condition);
 
     List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
@@ -319,7 +334,8 @@ public class ProductService {
         productGetResponseDTOList);
   }
 
-  public ProductGetAllResponseDTO getAllByProductMaxPriceAndCondition(Integer maxPrice, Integer condition) {
+  public ProductGetAllResponseDTO getAllByProductMaxPriceAndCondition(Integer maxPrice,
+      Integer condition) {
     List<Product> products = productRepo.getAllByMaxPriceAndCondition(maxPrice, condition);
 
     List<ProductGetResponseDTO> productGetResponseDTOList = new ArrayList<>();
@@ -377,7 +393,7 @@ public class ProductService {
           product.getBuyer() != null ? product.getBuyer().getId() : null,
           product.getColor(), product.getProductionYear(), product.getCreatedAt(),
           productImageService.productImagesToImageUrls(product.getProductImages())
-          );
+      );
       productGetResponseDTOList.add(productGetResponseDTO);
     }
   }

@@ -3,14 +3,23 @@ package org.example.marketplacebackend.repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.transaction.Transactional;
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductCategory;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
+
+  @Modifying
+  @Transactional
+  @Query("""
+    UPDATE Product SET status=2, buyer=:deleted WHERE id = :id
+    """)
+  void updateProductByStatusAndBuyer(UUID id, Account deleted);
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   List<Product> getAllByProductCategory(ProductCategory categoryId);
@@ -18,13 +27,13 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
       SELECT p from Product p WHERE p.productCategory = :productCategory ORDER BY p.createdAt ASC
-              """)
+      """)
   List<Product> getAllByProductCategoryAndAsc(ProductCategory productCategory);
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
       SELECT p from Product p WHERE p.productCategory = :productCategory ORDER BY p.createdAt DESC
-              """)
+      """)
   List<Product> getAllByProductCategoryAndDesc(ProductCategory productCategory);
 
   @EntityGraph(attributePaths = {"productImages"})
