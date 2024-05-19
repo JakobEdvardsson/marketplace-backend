@@ -54,13 +54,13 @@ public class WatchlistController {
 
   @PostMapping("")
   public ResponseEntity<?> postWatchListItem(Principal user,
-      @RequestBody UUID productCategoryID) {
+      @RequestBody String productCategoryName) {
 
-    if (productCategoryID == null) {
+    if (productCategoryName == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    ProductCategory productCategory = productCategoryRepository.findById(productCategoryID)
+    ProductCategory productCategory = productCategoryRepository.findByName(productCategoryName)
         .orElse(null);
 
     if (productCategory == null) {
@@ -68,8 +68,8 @@ public class WatchlistController {
     }
 
     Account authenticatedUser = userService.getAccountOrException(user.getName());
-    if (watchListRepository.existsBySubscriberAndProductCategoryId(authenticatedUser,
-        productCategoryID)) {
+    if (watchListRepository.existsBySubscriberAndProductCategoryName(authenticatedUser,
+        productCategoryName)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 

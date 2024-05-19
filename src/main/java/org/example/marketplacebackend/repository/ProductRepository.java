@@ -26,13 +26,13 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p from Product p WHERE p.productCategory = :productCategory ORDER BY p.createdAt ASC
+      SELECT p from Product p WHERE p.productCategory = :productCategory AND p.status = 0 ORDER BY p.createdAt ASC
       """)
   List<Product> getAllByProductCategoryAndAsc(ProductCategory productCategory);
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p from Product p WHERE p.productCategory = :productCategory ORDER BY p.createdAt DESC
+      SELECT p from Product p WHERE p.productCategory = :productCategory AND p.status = 0 ORDER BY p.createdAt DESC
       """)
   List<Product> getAllByProductCategoryAndDesc(ProductCategory productCategory);
 
@@ -41,113 +41,113 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.id in (:productIds) ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.id in (:productIds) AND p.status = 0 ORDER BY p.createdAt DESC
       """)
   List<Product> findTop40Products(List<UUID> productIds);
 
   @Query("""
-        SELECT p.id FROM Product p ORDER BY p.createdAt DESC LIMIT 40
+        SELECT p.id FROM Product p WHERE p.status = 0 ORDER BY p.createdAt DESC LIMIT 40
         """)
   List<UUID> findIdTop40ByOrderByCreatedAtDesc();
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice
+      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.status = 0
       """)
   List<Product> getProductsByPrice(Integer minPrice, Integer maxPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.price ASC
+      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.status = 0 ORDER BY p.price ASC
       """)
   List<Product> getProductsByPriceAndAsc(Integer minPrice, Integer maxPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.price DESC
+      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.status = 0 ORDER BY p.price DESC
       """)
   List<Product> getProductsByPriceAndDesc(Integer minPrice, Integer maxPrice);
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0
       """)
   List<Product> getProductsByCondition(Integer condition);
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition ORDER BY p.createdAt ASC
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 ORDER BY p.createdAt ASC
       """)
   List<Product> getProductsByConditionAndAsc(Integer condition);
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 ORDER BY p.createdAt DESC
       """)
   List<Product> getProductsByConditionAndDesc(Integer condition);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.productCategory.name = :category
+      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.productCategory.name = :category AND p.status = 0
       """)
   List<Product> getProductsByPriceAndCategory(String category, Integer minPrice, Integer maxPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.productCategory.name = :category ORDER BY p.createdAt ASC
+      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.status = 0 AND p.productCategory.name = :category ORDER BY p.createdAt ASC
       """)
   List<Product> getProductsByPriceAndCategoryASC(String category, Integer minPrice,
       Integer maxPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.productCategory.name = :category ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice AND p.status = 0 AND p.productCategory.name = :category ORDER BY p.createdAt DESC
       """)
   List<Product> getProductsByPriceAndCategoryDESC(String category, Integer minPrice,
       Integer maxPrice);
 
   @EntityGraph(attributePaths = {"productCategory", "condition", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category AND p.status = 0
       """)
   List<Product> getProductsByConditionAndCategory(Integer condition, String category);
 
   @EntityGraph(attributePaths = {"productCategory", "condition", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category ORDER BY p.createdAt ASC
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category AND p.status = 0 ORDER BY p.createdAt ASC
       """)
   List<Product> getProductsByConditionAndCategoryAndAsc(Integer condition, String category);
 
   @EntityGraph(attributePaths = {"productCategory", "condition", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category AND p.status = 0 ORDER BY p.createdAt DESC
       """)
   List<Product> getProductsByConditionAndCategoryAndDesc(Integer condition, String category);
 
   @EntityGraph(attributePaths = {"condition", "price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.price BETWEEN :minPrice AND :maxPrice
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 AND p.price BETWEEN :minPrice AND :maxPrice
       """)
   List<Product> getProductsByConditionAndPrice(Integer condition, Integer minPrice,
       Integer maxPrice);
 
   @EntityGraph(attributePaths = {"condition", "price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt ASC
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt ASC
       """)
   List<Product> getProductsByConditionAndPriceAndAsc(Integer condition, Integer minPrice,
       Integer maxPrice);
 
   @EntityGraph(attributePaths = {"condition", "price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt DESC
       """)
   List<Product> getProductsByConditionAndPriceAndDesc(Integer condition, Integer minPrice,
       Integer maxPrice);
 
   @EntityGraph(attributePaths = {"productCategory", "condition", "price", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category AND p.price BETWEEN :min AND :max
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 AND p.productCategory.name = :category AND p.price BETWEEN :min AND :max
       """)
   List<Product> getProductsByConditionAndCategoryAndPrice(Integer condition, String category,
       Integer min, Integer max);
@@ -166,79 +166,79 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price >= :minPrice
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.status = 0
       """)
   List<Product> getProductsByMinPrice(Integer minPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price <= :maxPrice
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.status = 0
       """)
   List<Product> getProductsByMaxPrice(Integer maxPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price >= :minPrice ORDER BY p.price ASC
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.status = 0 ORDER BY p.price ASC
       """)
   List<Product> getAllByMinPriceAndSortAsc(Integer minPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price >= :minPrice ORDER BY p.price DESC
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.status = 0 ORDER BY p.price DESC
       """)
   List<Product> getAllByMinPriceAndSortDesc(Integer minPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.condition = :condition
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.status = 0 AND p.condition = :condition
       """)
   List<Product> getAllByMinPriceAndCondition(Integer minPrice, Integer condition);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.condition = :condition ORDER BY p.createdAt ASC
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.status = 0 AND p.condition = :condition ORDER BY p.createdAt ASC
       """)
   List<Product> getAllByMinPriceAndConditionAndSortAsc(Integer minPrice, Integer condition);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.condition = :condition ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.price >= :minPrice AND p.status = 0 AND p.condition = :condition ORDER BY p.createdAt DESC
       """)
   List<Product> getAllByMinPriceAndConditionAndSortDesc(Integer minPrice, Integer condition);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.condition = :condition ORDER BY p.createdAt ASC
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.status = 0 AND p.condition = :condition ORDER BY p.createdAt ASC
       """)
   List<Product> getAllByMaxPriceAndConditionAndSortAsc(Integer maxPrice, Integer condition);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.condition = :condition ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.status = 0 AND p.condition = :condition ORDER BY p.createdAt DESC
       """)
   List<Product> getAllByMaxPriceAndConditionAndSortDesc(Integer maxPrice, Integer condition);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "condition"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.condition = :condition
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.status = 0 AND p.condition = :condition
       """)
   List<Product> getAllByMaxPriceAndCondition(Integer maxPrice, Integer condition);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price <= :maxPrice ORDER BY p.price ASC
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.status = 0 ORDER BY p.price ASC
       """)
   List<Product> getAllByMaxPriceAndSortAsc(Integer maxPrice);
 
   @EntityGraph(attributePaths = {"price", "productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.price <= :maxPrice ORDER BY p.price DESC
+      SELECT p FROM Product p WHERE p.price <= :maxPrice AND p.status = 0 ORDER BY p.price DESC
       """)
   List<Product> getAllByMaxPriceAndSortDesc(Integer maxPrice);
 
   @EntityGraph(attributePaths = {"productCategory", "condition", "price", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 AND p.productCategory.name = :category AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt
       ASC
       """)
   List<Product> getProductsByConditionAndCategoryAndPriceAndAsc(Integer condition, String category,
@@ -246,7 +246,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"productCategory", "condition", "price", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.condition = :condition AND p.productCategory.name = :category AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt
+      SELECT p FROM Product p WHERE p.condition = :condition AND p.status = 0 AND p.productCategory.name = :category AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.createdAt
       DESC
       """)
   List<Product> getProductsByConditionAndCategoryAndPriceAndDesc(Integer condition, String category,
@@ -254,7 +254,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p ORDER BY p.createdAt ASC
+      SELECT p FROM Product p WHERE p.status = 0 ORDER BY p.createdAt ASC
       """)
   List<Product> getProductsByAsc();
 
@@ -266,13 +266,13 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE lower(p.name) LIKE lower(concat('%', :searchQuery, '%'))
+      SELECT p FROM Product p WHERE p.status = 0 AND lower(p.name) LIKE lower(concat('%', :searchQuery, '%'))
       """)
   List<Product> findBySearchQuery(String searchQuery);
 
   @EntityGraph(attributePaths = {"productCategory", "productImages"})
   @Query("""
-      SELECT p FROM Product p WHERE p.productCategory.id in (:categories) ORDER BY p.createdAt DESC
+      SELECT p FROM Product p WHERE p.status = 0 AND p.productCategory.id in (:categories) ORDER BY p.createdAt DESC
       """)
   List<Product> getAllProductsByProvidedCategories(List<UUID> categories);
 }

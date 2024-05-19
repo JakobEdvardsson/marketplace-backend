@@ -15,6 +15,7 @@ public interface WatchListRepository extends JpaRepository<Watchlist, UUID> {
   long deleteBySubscriberAndProductCategory(Account subscriber, ProductCategory productCategoryID);
 
   boolean existsBySubscriberAndProductCategoryId(Account subscriber, UUID productCategoryID);
+  boolean existsBySubscriberAndProductCategoryName(Account subscriber, String productCategoryName);
 
   @Query("SELECT w.subscriber.id FROM Watchlist w WHERE w.productCategory = :category")
   List<String> findByProductCategory(ProductCategory category);

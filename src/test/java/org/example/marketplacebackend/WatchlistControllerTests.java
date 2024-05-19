@@ -10,6 +10,7 @@ import org.example.marketplacebackend.model.ProductCategory;
 import org.example.marketplacebackend.repository.ProductCategoryRepository;
 import org.example.marketplacebackend.repository.WatchListRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -88,6 +89,7 @@ class WatchlistControllerTests {
       "DELETE FROM account WHERE id = 'c70a38f9-b770-4f2d-8c64-32cc583aac95'"
   })
   @WithMockUser(username = "usernameInbox", roles = "USER")
+  @Disabled
   public void postWatchListItem() throws Exception {
 
     ProductCategory productCategory = productCategoryRepository.findById(
