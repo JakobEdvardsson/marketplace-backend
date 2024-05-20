@@ -54,7 +54,8 @@ public class ProductOrderService {
             product.getId(),
             product.getName(),
             product.getPrice(),
-            true
+            true,
+            product.getStatus()
         );
         orderItemsDTO.add(orderItemDTOError);
         continue;
@@ -71,7 +72,8 @@ public class ProductOrderService {
           saved.getProduct().getId(),
           saved.getProduct().getName(),
           saved.getProduct().getPrice(),
-          false
+          false,
+          product.getStatus()
       );
 
       orderItemsDTO.add(orderItemDTOSuccess);
