@@ -106,7 +106,8 @@ public class OrdersController {
             orderItem.getOrder().getId(),
             orderItem.getProduct().getName(),
             orderItem.getProduct().getPrice(),
-            false
+            false,
+            orderItem.getProduct().getStatus()
         );
         orderItemsDTO.add(orderItemDTO);
       }
@@ -177,7 +178,8 @@ public class OrdersController {
           item.getProduct().getId(),
           item.getProduct().getName(),
           item.getProduct().getPrice(),
-          false
+          false,
+          item.getProduct().getStatus()
       );
       orderItemsDTO.add(orderItemDTO);
     }
