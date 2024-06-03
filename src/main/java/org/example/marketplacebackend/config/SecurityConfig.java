@@ -40,7 +40,8 @@ public class SecurityConfig {
             "/v1/accounts/*",
             "/v1/categories",
             "/v1/products",
-            "/v1/products/**"
+            "/v1/products/**",
+            "/img/**"
         )
         .permitAll()
         // require auth to access these endpoints

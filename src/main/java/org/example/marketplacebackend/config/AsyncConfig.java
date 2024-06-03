@@ -16,7 +16,6 @@ public class AsyncConfig {
     executor.setCorePoolSize(1);
     executor.setMaxPoolSize(10);
     executor.setQueueCapacity(1000);
-    executor.setThreadNamePrefix("SSE-");
     executor.initialize();
     return executor;
   }

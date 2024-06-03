@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,13 +51,6 @@ public class ProductImageService {
 
   public ProductImage saveAttachment(UUID productId, MultipartFile file)
       throws IOException, IllegalArgumentException, MaxUploadSizeExceededException, SdkClientException {
-    BasicAWSCredentials creds = new BasicAWSCredentials(SPACE_ACCESS_KEY, SPACE_SECRET_KEY);
-    AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-        .withCredentials(new AWSStaticCredentialsProvider(creds))
-        .withEndpointConfiguration(new AmazonS3ClientBuilder.EndpointConfiguration(
-            "https://ams3.digitaloceanspaces.com", "ams-3"))
-        .build();
-
     String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
     if (fileName.contains("..")) {
@@ -66,10 +60,16 @@ public class ProductImageService {
       throw new MaxUploadSizeExceededException(file.getSize());
     }
 
+    String fileNameRandomized = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
     try (InputStream input = file.getInputStream()) {
       try {
         BufferedImage image = ImageIO.read(input);
-        if (image == null) {
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        if (image != null) {
+          ImageIO.write(image, fileExtension, new File("/opt/img/" + fileNameRandomized));
+        }
+        else {
           throw new FileNotFoundException("Nice try");
         }
       } catch (Exception e) {
@@ -77,21 +77,11 @@ public class ProductImageService {
       }
     }
 
-    String fileNameRandomized = UUID.randomUUID() + "_" + file.getOriginalFilename();
-    ObjectMetadata metaData = new ObjectMetadata();
-    metaData.setContentType(file.getContentType());
-    metaData.setContentDisposition(fileNameRandomized);
-
-    PutObjectRequest putObjectRequest = new PutObjectRequest("blocket-clone", fileNameRandomized,
-        file.getInputStream(), metaData)
-        .withCannedAcl(CannedAccessControlList.PublicRead);
-    s3Client.putObject(putObjectRequest);
-
     ProductImage attachment = new ProductImage();
     Product product = productRepository.getReferenceById(productId);
     attachment.setProduct(product);
     attachment.setImageUrl(
-        "https://blocket-clone.ams3.cdn.digitaloceanspaces.com/" + fileNameRandomized);
+        "http://localhost:8080/img/" + fileNameRandomized);
 
     return productImageRepo.save(attachment);
   }
