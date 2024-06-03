@@ -17,8 +17,8 @@ public class Application extends SpringBootServletInitializer {
     return application.sources(Application.class);
   }
 
-  public static void main(String[] args) throws IOException {
-    boolean directory = new File("/opt/img").mkdirs();
+  public static void main(String[] args) {
+    new File("/opt/img").mkdirs();
     IMAGE_DIR = "/opt/img/";
     SpringApplication.run(Application.class, args);
   }

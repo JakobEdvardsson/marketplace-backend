@@ -1,16 +1,6 @@
 package org.example.marketplacebackend.service;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.repository.ProductImageRepository;
@@ -35,10 +25,9 @@ import java.util.UUID;
 
 @Service
 public class ProductImageService {
-  @Value("${SPACE_ACCESS_KEY}")
-  private String SPACE_ACCESS_KEY;
-  @Value("${SPACES_SECRET_KEY}")
-  private String SPACE_SECRET_KEY;
+  @Value("${IMAGE_HOST_URL:http://localhost:8080}")
+  private String IMAGE_HOST_URL;
+
   private final ProductImageRepository productImageRepo;
   private final ProductRepository productRepository;
 
@@ -68,8 +57,7 @@ public class ProductImageService {
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
         if (image != null) {
           ImageIO.write(image, fileExtension, new File("/opt/img/" + fileNameRandomized));
-        }
-        else {
+        } else {
           throw new FileNotFoundException("Nice try");
         }
       } catch (Exception e) {
@@ -81,7 +69,7 @@ public class ProductImageService {
     Product product = productRepository.getReferenceById(productId);
     attachment.setProduct(product);
     attachment.setImageUrl(
-        "http://localhost:8080/img/" + fileNameRandomized);
+        IMAGE_HOST_URL + "/img/" + fileNameRandomized);
 
     return productImageRepo.save(attachment);
   }
