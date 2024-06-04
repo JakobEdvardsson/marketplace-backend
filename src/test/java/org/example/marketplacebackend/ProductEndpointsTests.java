@@ -131,18 +131,6 @@ public class ProductEndpointsTests {
       imageUrlsStrings.add(i, imageUrls.get(i).toString());
     }
 
-    BasicAWSCredentials creds = new BasicAWSCredentials(SPACE_ACCESS_KEY, SPACE_SECRET_KEY);
-    AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-        .withCredentials(new AWSStaticCredentialsProvider(creds))
-        .withEndpointConfiguration(new AmazonS3ClientBuilder.EndpointConfiguration(
-            "https://ams3.digitaloceanspaces.com", "ams-3"))
-        .build();
-
-    for (String imageUrl : imageUrlsStrings) {
-      s3Client.deleteObject(new DeleteObjectRequest("blocket-clone",
-          imageUrl.split("https://blocket-clone.ams3.cdn.digitaloceanspaces.com/")[1].split(
-              "\"")[0]));
-    }
   }
 
   @Test
