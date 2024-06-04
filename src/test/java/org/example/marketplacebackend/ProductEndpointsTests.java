@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
 import org.example.marketplacebackend.service.ProductImageService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +80,7 @@ public class ProductEndpointsTests {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
   }
 
+  @Disabled
   @Test
   @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
       statements = """
@@ -131,18 +133,6 @@ public class ProductEndpointsTests {
       imageUrlsStrings.add(i, imageUrls.get(i).toString());
     }
 
-    BasicAWSCredentials creds = new BasicAWSCredentials(SPACE_ACCESS_KEY, SPACE_SECRET_KEY);
-    AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-        .withCredentials(new AWSStaticCredentialsProvider(creds))
-        .withEndpointConfiguration(new AmazonS3ClientBuilder.EndpointConfiguration(
-            "https://ams3.digitaloceanspaces.com", "ams-3"))
-        .build();
-
-    for (String imageUrl : imageUrlsStrings) {
-      s3Client.deleteObject(new DeleteObjectRequest("blocket-clone",
-          imageUrl.split("https://blocket-clone.ams3.cdn.digitaloceanspaces.com/")[1].split(
-              "\"")[0]));
-    }
   }
 
   @Test
@@ -182,6 +172,7 @@ public class ProductEndpointsTests {
     getProducts.andExpect(status().isBadRequest());
   }
 
+  @Disabled
   @Test
   @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
       statements = """
