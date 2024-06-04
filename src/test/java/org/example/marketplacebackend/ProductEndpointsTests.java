@@ -1,16 +1,8 @@
 package org.example.marketplacebackend;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.marketplacebackend.DTO.incoming.ProductDTO;
-import org.example.marketplacebackend.service.ProductImageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -34,7 +26,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -68,11 +59,6 @@ public class ProductEndpointsTests {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
-
-  @Value("${SPACE_ACCESS_KEY}")
-  private String SPACE_ACCESS_KEY;
-  @Value("${SPACES_SECRET_KEY}")
-  private String SPACE_SECRET_KEY;
 
   @BeforeEach
   public void setup() {
