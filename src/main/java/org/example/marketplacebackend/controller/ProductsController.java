@@ -1,10 +1,8 @@
 package org.example.marketplacebackend.controller;
 
-import com.amazonaws.SdkClientException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import org.example.marketplacebackend.DTO.incoming.ProductCategoryDTO;
@@ -54,20 +52,18 @@ public class ProductsController {
   private final ProductService productService;
   private final UserService userService;
   private final ProductImageService productImageService;
-  private final SSEController sseController;
   private final InboxService inboxService;
   private final WatchListRepository watchListRepository;
 
   public ProductsController(CategoryService categoryService,
       ProductService productService,
       UserService userService, ProductImageService productImageService,
-      SSEController sseController, InboxService inboxService,
+      InboxService inboxService,
       WatchListRepository watchListRepository) {
     this.categoryService = categoryService;
     this.productService = productService;
     this.userService = userService;
     this.productImageService = productImageService;
-    this.sseController = sseController;
     this.inboxService = inboxService;
     this.watchListRepository = watchListRepository;
   }
@@ -108,7 +104,7 @@ public class ProductsController {
     try {
       uploadedImages = productImageService.saveFiles(productDB.getId(),
           files);
-    } catch (IOException | SdkClientException e) {
+    } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -144,7 +140,6 @@ public class ProductsController {
     }
 
     inboxService.saveAll(inboxes);
-    sseController.pushNewProduct(productDB);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

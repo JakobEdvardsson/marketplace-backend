@@ -1,6 +1,5 @@
 package org.example.marketplacebackend.service;
 
-import com.amazonaws.SdkClientException;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductImage;
 import org.example.marketplacebackend.repository.ProductImageRepository;
@@ -39,7 +38,7 @@ public class ProductImageService {
   }
 
   public ProductImage saveAttachment(UUID productId, MultipartFile file)
-      throws IOException, IllegalArgumentException, MaxUploadSizeExceededException, SdkClientException {
+      throws IOException, IllegalArgumentException, MaxUploadSizeExceededException {
     String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
     if (fileName.contains("..")) {
