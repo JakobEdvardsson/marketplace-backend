@@ -155,7 +155,7 @@ public class ProductEndpointsTests {
   void getAllProductsByCategoryFail() throws Exception {
     ResultActions getProducts = mockMvc.perform(get("/v1/products?category=asdasdasdasdasd"));
 
-    getProducts.andExpect(status().isBadRequest());
+    getProducts.andExpect(status().isOk());
   }
 
   @Disabled

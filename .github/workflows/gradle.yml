@@ -33,5 +33,4 @@ jobs:
       with:
         arguments: build
       env:
-        SPACE_ACCESS_KEY: ${{ secrets.SPACE_ACCESS_KEY }}
-        SPACES_SECRET_KEY: ${{ secrets.SPACES_SECRET_KEY }}
+        IMAGE_UPLOAD_DIRECTORY: ${{ secrets.IMAGE_UPLOAD_DIRECTORY }}
