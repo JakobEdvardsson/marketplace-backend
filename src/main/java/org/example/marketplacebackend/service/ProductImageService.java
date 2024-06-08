@@ -52,13 +52,15 @@ public class ProductImageService {
     }
 
     String fileNameRandomized = UUID.randomUUID().toString();
+    String fullFileName;
 
     try (InputStream input = file.getInputStream()) {
       try {
         BufferedImage image = ImageIO.read(input);
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        fullFileName = fileNameRandomized + "." + fileExtension;
         if (image != null) {
-          File targetFile = new File(IMAGE_UPLOAD_DIRECTORY + "/" + fileNameRandomized);
+          File targetFile = new File(IMAGE_UPLOAD_DIRECTORY + "/" + fullFileName);
           targetFile.mkdirs();
           ImageIO.write(image, fileExtension, targetFile);
         } else {
@@ -72,8 +74,7 @@ public class ProductImageService {
     ProductImage attachment = new ProductImage();
     Product product = productRepository.getReferenceById(productId);
     attachment.setProduct(product);
-    attachment.setImageUrl(
-        IMAGE_HOST_URL + "/img/" + fileNameRandomized);
+    attachment.setImageUrl(IMAGE_HOST_URL + "/img/" + fullFileName);
 
     return productImageRepo.save(attachment);
   }
