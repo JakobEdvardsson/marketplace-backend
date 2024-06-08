@@ -27,6 +27,9 @@ public class ProductImageService {
   @Value("${IMAGE_HOST_URL:http://localhost:8080}")
   private String IMAGE_HOST_URL;
 
+  @Value("${IMAGE_UPLOAD_DIRECTORY}")
+  private String IMAGE_UPLOAD_DIRECTORY;
+
   private final ProductImageRepository productImageRepo;
   private final ProductRepository productRepository;
 
@@ -48,14 +51,16 @@ public class ProductImageService {
       throw new MaxUploadSizeExceededException(file.getSize());
     }
 
-    String fileNameRandomized = UUID.randomUUID() + "_" + file.getOriginalFilename();
+    String fileNameRandomized = UUID.randomUUID().toString();
 
     try (InputStream input = file.getInputStream()) {
       try {
         BufferedImage image = ImageIO.read(input);
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
         if (image != null) {
-          ImageIO.write(image, fileExtension, new File("/opt/img/" + fileNameRandomized));
+          File targetFile = new File(IMAGE_UPLOAD_DIRECTORY + "/" + fileNameRandomized);
+          targetFile.mkdirs();
+          ImageIO.write(image, fileExtension, targetFile);
         } else {
           throw new FileNotFoundException("Nice try");
         }
