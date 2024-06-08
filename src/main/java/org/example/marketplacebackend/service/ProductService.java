@@ -49,7 +49,7 @@ public class ProductService {
     List<Predicate> predicates = new ArrayList<>();
 
     if (category != null) {
-      predicates.add(cb.equal(product.get("category"), category));
+      predicates.add(cb.equal(product.get("productCategory").get("name"), category));
     }
     if (minPrice != null) {
       entityGraph.addAttributeNodes("price");
