@@ -14,6 +14,7 @@ import org.example.marketplacebackend.DTO.outgoing.productDTOs.ProductGetRespons
 import org.example.marketplacebackend.model.Account;
 import org.example.marketplacebackend.model.Product;
 import org.example.marketplacebackend.model.ProductCategory;
+import org.example.marketplacebackend.model.ProductStatus;
 import org.example.marketplacebackend.repository.AccountRepository;
 import org.example.marketplacebackend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class ProductService {
     Root<Product> product = cq.from(Product.class);
 
     List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(product.get("status"), ProductStatus.AVAILABLE.ordinal()));
 
     if (category != null) {
       predicates.add(cb.equal(product.get("productCategory").get("name"), category));
