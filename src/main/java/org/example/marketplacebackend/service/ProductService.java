@@ -65,7 +65,7 @@ public class ProductService {
       predicates.add(cb.equal(product.get("condition"), condition));
     }
     if (query != null) {
-      predicates.add(cb.like(product.get("name"), "%" + query + "%"));
+      predicates.add(cb.like(cb.lower(product.get("name")), "%" + query.toLowerCase() + "%"));
     }
 
     cq.where(predicates.toArray(new Predicate[0]));
