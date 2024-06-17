@@ -13,8 +13,8 @@ Railway is used to host our database, which provides a containerized environment
   - POSTGRES_DB
   - POSTGRES_USER
   - POSTGRES_PASSWORD
-  - SPACE_ACCESS_KEY
-  - SPACES_SECRET_KEY
+  - IMAGE_UPLOAD_DIRECTORY
+  - IMAGE_HOST_URL
 - Docker for running tests (OPTIONAL): [Docker](https://www.docker.com/)
   
 ## Installation (TERMINAL)
