@@ -96,7 +96,6 @@ public class ProductService {
   public void setStatusSoldAndBuyerToDeleted(UUID id) {
     Account deleted = accountRepo.findByUsername("deleted").orElse(null);
     assert deleted != null;
-    System.out.println(deleted.getId());
     productRepo.updateProductByStatusAndBuyer(id, deleted);
   }
 
