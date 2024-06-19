@@ -115,7 +115,7 @@ public class ProductImageService {
   }
 
   /**
-   * Deletes the given image to the database and the local file system.
+   * Deletes the given image from the database and the local file system.
    *
    * @param image The image to be deleted.
    */
