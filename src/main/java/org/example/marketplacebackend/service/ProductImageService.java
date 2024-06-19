@@ -115,12 +115,19 @@ public class ProductImageService {
   }
 
   /**
-   * Deletes the given image to the database.
+   * Deletes the given image to the database and the local file system.
    *
    * @param image The image to be deleted.
    */
   public void deleteImage(ProductImage image) {
     productImageRepo.delete(image);
+    if (image.getImageUrl() == null || !image.getImageUrl().startsWith(IMAGE_HOST_URL)) {
+      throw new IllegalArgumentException();
+    }
+
+    String imageName = image.getImageUrl().split(IMAGE_HOST_URL + "/img/")[1];
+    File targetFile = new File(IMAGE_UPLOAD_DIRECTORY + "/" + imageName);
+    targetFile.delete();
   }
 
   @Transactional
